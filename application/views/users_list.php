@@ -1,5 +1,5 @@
 	<h4><?php echo $page_title; ?></h4>
-<?var_dump($data)?>
+<!-- <?var_dump($data)?> -->
 	<table class="reg reg-options">
 		<tr bgcolor='#FF5E5E'>
 			<th>Имя</th>

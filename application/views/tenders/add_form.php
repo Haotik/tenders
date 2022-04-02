@@ -91,6 +91,13 @@ if ($no_tender == TRUE) {
         'checked' => ((!empty($tender_detail['type_auction']) && $tender_detail['type_auction'] == 2) ? "checked" : set_value('type_auction')),
         'class' => 'validate[required]'
     );
+    $type_rate_it = array(
+        'name' => 'type_auction',
+        'id' => 'type_rate_it',
+        'value' => 3,
+        'checked' => ((!empty($tender_detail['type_auction']) && $tender_detail['type_auction'] == 3) ? "checked" : set_value('type_auction')),
+        'class' => 'validate[required]'
+    );
     $type_auction_scandinavia = array(
         'name' => 'type_auction_scandinavia',
         'id' => 'type_auction_scandinavia',
@@ -195,6 +202,8 @@ if ($no_tender == TRUE) {
                 <br/>
                 <?php echo form_radio($type_auction_ebay); ?> <?php echo form_label('Полузакрытые торги (механизм «eBay»)', 'type_auction_ebay'); ?>
                 <br/>
+                <?php echo form_radio($type_rate_it); ?> <?php echo form_label('Ставка ИТ', 'type_rate_it'); ?>
+                <br/>
                 <?php echo form_checkbox($type_auction_scandinavia); ?> <?php echo form_label('Скандинавский аукцион', 'type_auction_scandinavia'); ?>
                 <br/>
                 <?php echo form_checkbox($type_auction_plus); ?> <?php echo form_label('Аукцион в «плюс»', 'type_auction_plus'); ?>
@@ -293,7 +302,8 @@ if ($no_tender == TRUE) {
             <th>Наименование</th>
             <th>Ед. изм.</th>
             <th>Потребность</th>
-            <th>Начальная цена, руб.</th>
+            <th class="col_start_sum">Начальная цена, руб.</th>
+            <th class="col_product_link">Ссылка на товар</th>
             <th class="col_rate_step">Шаг ставки, руб.</th>
             <th>Действия</th>
         </tr>
@@ -313,8 +323,9 @@ if ($no_tender == TRUE) {
             <td><input type="text" id="new_lot_unit" name="new_lot_unit" style="width: 95%;"/></td>
             <td><input type="text" id="new_lot_need" name="new_lot_need" style="width: 95%;"
                        class="validate[custom[integer]]"/></td>
-            <td><input type="text" id="new_lot_start_sum" name="new_lot_start_sum" style="width: 95%;"
+            <td class="col_start_sum"><input type="text" id="new_lot_start_sum" name="new_lot_start_sum" style="width: 95%;"
                        class="validate[custom[integer]]"/></td>
+            <td class="col_product_link"><input type="text" id="new_lot_product_link" name="new_lot_product_link" style="width: 95%;"/></td>
             <td class="col_rate_step"><input type="text" id="new_lot_step_lot" name="new_step_lot" style="width: 95%;"
                                              class="validate[custom[number]]"/></td>
             <td><a href="" class="button-add" title="Добавить" onclick="$.AddLot(); return false;"></a></td>
