@@ -116,6 +116,129 @@ class Auth extends CI_Controller
 	 *
 	 * @return void
 	 */
+	function register_from_admin()
+	{
+		$use_username = $this->config->item('use_username', 'tank_auth');
+
+		$admin_group_id = $this->tank_auth->get_group_id();
+		if ($use_username) {
+			$this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean|min_length['.$this->config->item('username_min_length', 'tank_auth').']|max_length['.$this->config->item('username_max_length', 'tank_auth').']|alpha_dash');
+		}
+			$this->form_validation->set_rules('email', 'E-mail', 'trim|required|xss_clean|valid_email');
+			$this->form_validation->set_rules('name', 'Наименование организации (ФИО)', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('legal_form', 'Организационно-правовая форма', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('region', 'Регион', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('city', 'Населенный пункт', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('director_name', 'ФИО руководителя предприятия', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('inn', 'ИНН', 'trim|required|xss_clean|numeric');
+			$this->form_validation->set_rules('kpp', 'КПП', 'trim|required|xss_clean|numeric');
+			$this->form_validation->set_rules('address', 'Адрес', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('fact_address', 'Фактический адрес поставщика', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('phone', 'Телефон', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('contacts', 'Контактные лица', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('requisites', 'Реквизиты для включения в контракт', 'trim|required|xss_clean');
+
+			$this->form_validation->set_rules('register_password', 'Пароль', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']|alpha_dash');
+			$this->form_validation->set_rules('confirm_password', 'Еще раз Пароль', 'trim|required|xss_clean|matches[register_password]');
+
+			$data['errors'] = array();
+
+			$email_activation = $this->config->item('email_activation', 'tank_auth');
+
+			if ($this->form_validation->run()) {								// validation ok
+				if (!is_null($data = $this->tank_auth->create_user(
+						$use_username ? $this->form_validation->set_value('username') : '',
+						$this->form_validation->set_value('email'),
+						$this->form_validation->set_value('register_password'),
+						$email_activation))) {									// success
+
+					$data['site_name'] = $this->config->item('website_name', 'tank_auth');
+
+					$data_profile = array(
+						'user_id'	=> $data['user_id'],
+						'group_id'	=> $this->input->post('group'),
+						'name'	=> $this->input->post('name'),
+						'type_data'	=> $this->input->post('type_data'),
+						'legal_form'	=> $this->input->post('legal_form'),
+						'small_business'	=> $this->input->post('small_business'),
+						'region'	=> $this->input->post('region'),
+						'city'	=> $this->input->post('city'),
+						'address'	=> $this->input->post('address'),
+						'fact_address'	=> $this->input->post('fact_address'),
+						'phone'	=> $this->input->post('phone'),
+						'fax'	=> $this->input->post('fax'),
+						'director_name'	=> $this->input->post('director_name'),
+						'contacts'	=> $this->input->post('contacts'),
+						'certifikates'	=> $this->input->post('certifikates'),
+						'organization_date'	=> $this->input->post('organization_date'),
+						'inn'	=> $this->input->post('inn'),
+						'kpp'	=> $this->input->post('kpp'),
+						'employes_count'	=> $this->input->post('employes_count'),
+						'okved'	=> $this->input->post('okved'),
+						'services'	=> $this->input->post('services'),
+						'requisites'	=> $this->input->post('requisites'),
+						'notice_other_members'	=> $this->input->post('notice_other_members'),
+						'notice_new_auctions'	=> $this->input->post('notice_new_auctions'),
+                        /*new notifications*/
+                        'notice_disable'	=> $this->input->post('notice_disable'),
+                        'notice_day_before_start'	=> $this->input->post('notice_day_before_start'),
+                        'notice_hour_before_start'	=> $this->input->post('notice_hour_before_start'),
+                        'notice_day_before_end'	=> $this->input->post('notice_day_before_end'),
+                        'notice_hour_before_end'	=> $this->input->post('notice_hour_before_end'),
+                        'select_all_tags'	=> $this->input->post('select_all_tags'),
+                        'notice_new_purchases'	=> $this->input->post('notice_new_purchases'),
+                        'notice_purchases_day_before_start'	=> $this->input->post('notice_purchases_day_before_start'),
+                        'notice_purchases_day_before_end'	=> $this->input->post('notice_purchases_day_before_end'),
+					);
+					$bool_data_profile = $this->tank_auth->create_profile($data_profile);
+					
+					if($bool_data_profile){
+                        $user_id = $this->db->insert_id();
+                        $tags = array();
+                        if (is_array($this->input->post('user_tags')))
+                            $tags = $this->input->post('user_tags');
+                        foreach ($tags as $tag) {
+                            $tag_data = array(
+                                'user_id' => $user_id,
+                                'tag_id' => $tag,
+                            );
+                            $this->db->insert('users_tags', $tag_data);
+                        }
+                    }
+
+					if ($email_activation) {									// send "activate" email
+/*						$data['activation_period'] = $this->config->item('email_activation_expire', 'tank_auth') / 3600;
+
+						$this->_send_email('activate', $data['email'], $data);
+*/
+						unset($data['password']); // Clear password (just for any case)
+
+						$this->_show_message($this->lang->line('auth_message_registration_completed_1'));
+					} else {
+/*						if ($this->config->item('email_account_details', 'tank_auth')) {	// send "welcome" email
+
+							$this->_send_email('welcome', $data['email'], $data);
+						}
+*/
+						$this->_send_email('newuser', "Новый пользователь", array('user_id' => $data['user_id']), $this->config->item('engine_admin_email'));
+						unset($data['password']); // Clear password (just for any case)
+
+						$this->_show_message($this->lang->line('auth_message_registration_completed_2'));
+					}
+				} else {
+					$errors = $this->tank_auth->get_error_message();
+					foreach ($errors as $k => $v)	$data['errors'][$k] = $this->lang->line($v);
+				}
+			}
+            $data['all_tags'] = $this->users->get_all_tender_tags();
+			$data['use_username'] = $use_username;
+			$data['page_title'] = 'Регистрация';
+			$data['user_profile'] = array();
+			$data['current_groupe_id'] = $admin_group_id;
+			$this->template->view('auth/register_form_admin', $data);
+		
+	}
+
 	function register()
 	{
 		if ($this->tank_auth->is_logged_in()) {									// logged in
@@ -386,6 +509,7 @@ class Auth extends CI_Controller
 		} else {
 			$data['users_list'] = $this->tank_auth->users_list();
 			$data['page_title'] = 'Список пользователей';
+			$data['group_id'] = $group_id;
 			$this->template->view('users_list', $data);
 		}
 	}

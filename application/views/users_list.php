@@ -1,5 +1,9 @@
-	<h4><?php echo $page_title; ?></h4>
-<?var_dump($data)?>
+	<h4><?php echo $page_title; ?> 
+	<?if ($group_id == 3) {?>
+	<a href="/auth/register_from_admin/" style="float: right; margin-right: 50px;">Добавить</a>
+	<?}?>
+	</h4>
+
 	<table class="reg reg-options">
 		<tr bgcolor='#FF5E5E'>
 			<th>Имя</th>
