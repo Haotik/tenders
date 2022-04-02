@@ -1,0 +1,9 @@
+	</div>
+	<div class="clear"></div>
+
+	<div id="footer">
+		<p>Copyright &copy; <?php echo date("Y"); ?> Торговый Дом «Барс»</p>
+	</div>
+</div>
+</body>
+</html>

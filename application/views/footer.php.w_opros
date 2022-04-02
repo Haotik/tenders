@@ -1,0 +1,10 @@
+	</div>
+	<div class="clear"></div>
+
+	<div id="footer">
+		<p>Copyright &copy; <?php echo date("Y"); ?> ГК «Барс»</p>
+	</div>
+</div>
+</body>
+<script>(function(t,e,o,c){var s,i,n;t.SMCX=t.SMCX||[],e.getElementById(c)||(s=e.getElementsByTagName(o),i=s[s.length-1],n=e.createElement(o),n.type="text/javascript",n.async=!0,n.id=c,n.src=["https:"===location.protocol?"https://":"http://","widget.surveymonkey.com/collect/website/js/9cpiGC3x9vQ2XyHtofSqN1d1iqk8EA7oZi2INiO6lmqPXPc3LyglsERJYLN457j0.js"].join(""),i.parentNode.insertBefore(n,i))})(window,document,"script","smcx-sdk");</script>
+</html>

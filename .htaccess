@@ -1,0 +1,37 @@
+php_flag display_errors on
+AddDefaultCharset UTF-8
+php_value date.timezone Europe/Moscow
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [QSA,L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    ErrorDocument 404 /index.php
+</IfModule> 
+
+#AuthType Basic
+#AuthName "Protected Area"
+#AuthUserFile /var/www/minister/data/www/tenders.livomedia.ru/.htpasswd
+#Require valid-user
+
+#<ifmodule mod_expires.c>
+#<filesmatch ".(jpg|jpeg|gif|png|ico|css|js)$">
+#ExpiresActive on
+#ExpiresDefault "access plus 1 month"
+#</filesmatch>
+#</ifmodule>
+
+#<IfModule mod_deflate.c>
+#AddOutputFilterByType DEFLATE text/html text/plain text/xml application/xml application/xhtml+xml text/javascript text/css application/x-javascript
+#BrowserMatch ^Mozilla/4 gzip-only-text/html
+#BrowserMatch ^Mozilla/4.0[678] no-gzip
+#BrowserMatch bMSIE !no-gzip !gzip-only-text/html
+#<ifmodule mod_gzip.c>
+#mod_gzip_on Yes
+#mod_gzip_item_include file \.js$
+#mod_gzip_item_include file \.css$ </ifmodule>
+#</IfModule>
