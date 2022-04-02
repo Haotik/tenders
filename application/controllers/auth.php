@@ -119,6 +119,7 @@ class Auth extends CI_Controller
 	function register_from_admin()
 	{
 		$use_username = $this->config->item('use_username', 'tank_auth');
+
 		$admin_group_id = $this->tank_auth->get_group_id();
 		if ($use_username) {
 			$this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean|min_length['.$this->config->item('username_min_length', 'tank_auth').']|max_length['.$this->config->item('username_max_length', 'tank_auth').']|alpha_dash');
@@ -155,7 +156,7 @@ class Auth extends CI_Controller
 
 					$data_profile = array(
 						'user_id'	=> $data['user_id'],
-						'group_id'	=> 1,
+						'group_id'	=> $this->input->post('group'),
 						'name'	=> $this->input->post('name'),
 						'type_data'	=> $this->input->post('type_data'),
 						'legal_form'	=> $this->input->post('legal_form'),
@@ -190,7 +191,7 @@ class Auth extends CI_Controller
                         'notice_purchases_day_before_end'	=> $this->input->post('notice_purchases_day_before_end'),
 					);
 					$bool_data_profile = $this->tank_auth->create_profile($data_profile);
-
+					
 					if($bool_data_profile){
                         $user_id = $this->db->insert_id();
                         $tags = array();
