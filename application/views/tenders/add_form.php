@@ -335,9 +335,21 @@ if ($no_tender == TRUE) {
     <h4>Категории аукциона</h4>
     <select id="add_form_tags" class="select2" multiple="multiple" name="tender_tags" style="width:100%;">
         <?php if ($all_tags != null): ?>
-            <?php foreach($all_tags as $tag):?>
-                <option <?php echo (!empty($tender_tags) && in_array($tag['id'],$tender_tags) )?"selected":""; ?> value="<?php echo $tag['id'];?>"><?php echo $tag['caption'];?></option>
-            <?php endforeach;?>
+            <? if ($group_id != 5):?>
+                <?php foreach($all_tags as $tag):?>
+                    <option <?php echo (!empty($tender_tags) && in_array($tag['id'],$tender_tags) )?"selected":""; ?> value="<?php echo $tag['id'];?>"><?php echo $tag['caption'];?></option>
+                <?php endforeach;?>
+            <?php endif;?>
+            <? if ($group_id == 5):?>
+                <?php foreach($all_tags as $tag):?>
+                    <?
+                    if ($tag["caption"] != "Закупка ИТ") {
+                        continue;
+                    }
+                    ?>
+                    <option selected = "selected" value="<?php echo $tag['id'];?>"><?php echo $tag['caption'];?></option>
+                <?php endforeach;?>
+            <?php endif;?>
         <?php endif;?>
     </select>
 
