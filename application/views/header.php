@@ -146,7 +146,7 @@
                 } elseif ($this->uri->segments[2] == 'add' || $this->uri->segments[2] == 'edit') {
                 ?>
                 $.datepicker.setDefaults($.datepicker.regional[""]);
-                $("#begin_date, #end_date").datepicker($.datepicker.regional["ru"]);
+                $("#begin_date, #end_date, #new_end_datetime").datepicker($.datepicker.regional["ru"]);
                 $('#begin_time, #end_time').timepicker({});
                 $("#row_tender_minute_end, #row_scan_minute, .col_rate_step").hide();
 
@@ -556,7 +556,7 @@
                 });
                 <?php
                 }
-                if (($group_id == 2 && $tender_author == TRUE) || $group_id == 3) {
+                if (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) {
                 ?>
                 $.SelectWinner = function (user_id, tender_id) {
                     $.post('/tenders/winner/', {user_id: user_id, tender_id: tender_id},
@@ -586,8 +586,8 @@
                     return false;
                 }
 
-                $.EarlyEnd = function (tender_id) {
-                    $.post('/tenders/earlyend/', {tender_id: tender_id, auto_end: 0},
+                $.EarlyEnd = function (tender_id, reason) {
+                    $.post('/tenders/earlyend/', {tender_id: tender_id, auto_end: 0, reason:reason},
                         function (txt) {
                             get = txt.split('|');
                             if (get[0] == 'success') {
@@ -614,8 +614,8 @@
                     return false;
                 }
 
-                $.Cancellation = function (tender_id) {
-                    $.post('/tenders/cancellation/', {tender_id: tender_id},
+                $.Cancellation = function (tender_id, reason) {
+                    $.post('/tenders/cancellation/', {tender_id: tender_id, reason: reason},
                         function (txt) {
                             get = txt.split('|');
                             if (get[0] == 'success') {
@@ -641,6 +641,7 @@
                     );
                     return false;
                 }
+               
 
                 $.GeterateDOC = function (tender_id, user_id) {
                     var fields = $("#protocol-form select[name=commission[]]:input").serializeArray();
