@@ -2,6 +2,32 @@
 $is_admin = (($this->tank_auth->is_logged_in() && $this->tank_auth->get_group_id() != 1) &&
     (!empty($this->uri->segments[2]) && ($this->uri->segments[2] == 'finished' || $this->uri->segments[2] == 'archive')));
 ?>
+
+<?$group_id = $this->tank_auth->get_group_id();
+$all_tags = $this->tenders->get_all_tender_tags(); //почему то из контролера приходит не весь список
+$user_id = $this->tank_auth->get_user_id();
+if ($group_id == 6) {
+    // Участник ИТ - группа показывается по умолчанию
+    // А что он должен видеть то?
+} else if($group_id == 5){
+
+    for($i = 0;$i < count($tenders_list);$i++){
+        if ($tenders_list[$i]["user_id"] == $user_id) {
+            $actual_tenders[] = $tenders_list[$i];
+        }
+    }
+    $tenders_list = $actual_tenders;
+    //Администратор торгов - видит только свои аукционы 
+} else if ($group_id == 7 OR $group_id == 6) {
+    // Аудитор - видит все ИТ аукционы
+    foreach ($tenders_categories[0] as $key => $value){
+        if ($value["tag_id"] == 27) {
+            $actual_tenders[] = $tenders_list[$key];
+        }
+    }
+    $tenders_list = $actual_tenders;
+}
+?>
 <script>
     $(document).ready(function () {
         $.datepicker.setDefaults($.datepicker.regional[""]);
@@ -41,10 +67,21 @@ $is_admin = (($this->tank_auth->is_logged_in() && $this->tank_auth->get_group_id
     <select name="tag" id="filter_tags" style="width:40%;">
         <option></option>
         <?php if ($all_tags != null): ?>
+            <?if ($group_id == 7 OR $group_id == 5 OR $group_id == 6){?>
+                <?php foreach ($all_tags as $tag): ?>
+                    <?
+                    if ($tag["caption"] != "Закупка ИТ") {
+                        continue;
+                    }
+                    ?>
+                    <option selected = "selected" value="<?php echo $tag['id'];?>"><?php echo $tag['caption'];?></option>
+                <?php endforeach; ?>
+            <?} else {?>
             <?php foreach ($all_tags as $tag): ?>
                 <option <?php echo ($tag['id'] == $selected_tag) ? 'selected' : ''; ?>
                         value="<?php echo $tag['id']; ?>"><?php echo $tag['caption']; ?></option>
             <?php endforeach; ?>
+            <?}?>
         <?php endif; ?>
     </select>
 
@@ -109,7 +146,7 @@ $is_admin = (($this->tank_auth->is_logged_in() && $this->tank_auth->get_group_id
             <th>Начальная цена</th>
             <th>Шаг ставки</th>
         <?php endif; ?>
-        <?php if ($group_id == 2 || $group_id == 3) {
+        <?php if ($group_id == 2 || $group_id == 3 || $group_id == 5) {
             ?>
             <th>Действия</th>
             <?php
