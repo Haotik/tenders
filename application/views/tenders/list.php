@@ -6,11 +6,12 @@ $is_admin = (($this->tank_auth->is_logged_in() && $this->tank_auth->get_group_id
 <?$group_id = $this->tank_auth->get_group_id();
 $all_tags = $this->tenders->get_all_tender_tags(); //почему то из контролера приходит не весь список
 $user_id = $this->tank_auth->get_user_id();
+$actual_tenders = [];
 if ($group_id == 6) {
     // Участник ИТ - группа показывается по умолчанию
     // А что он должен видеть то?
 } else if($group_id == 5){
-
+    
     for($i = 0;$i < count($tenders_list);$i++){
         if ($tenders_list[$i]["user_id"] == $user_id) {
             $actual_tenders[] = $tenders_list[$i];
