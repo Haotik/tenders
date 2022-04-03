@@ -478,10 +478,12 @@
                         var arr_lots = new Array();
                         var k = 0;
                         $("#lots tbody tr").find('td').each(function (i) {
-                            if ($(this).text() != "") {
+                            // if ($(this).text() != "") {
+                            if ($(this).find(".button-delete").length === 0) {
                                 arr_lots[k] = $(this).text();
                                 k++;
                             }
+                            // }
                         });
                         console.log($("input[name=is_add]").val());
                         $.post('/tenders/save/', {
@@ -509,6 +511,7 @@
                                 new_lot_unit: $("#new_lot_unit").val(),
                                 new_lot_need: $("#new_lot_need").val(),
                                 new_lot_start_sum: $("#new_lot_start_sum").val(),
+                                new_lot_product_link: $("#new_lot_product_link").val(),
                                 new_lot_step_lot: $("#new_lot_step_lot").val(),
                                 tags: $("#add_form_tags").val(),
                                 users: $("#add_tender_users").val(),

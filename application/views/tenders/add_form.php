@@ -95,7 +95,7 @@ if ($no_tender == TRUE) {
         'name' => 'type_auction',
         'id' => 'type_rate_it',
         'value' => 3,
-        'checked' => ((!empty($tender_detail['type_auction']) && $tender_detail['type_auction'] == 3 || $user_group_id == 5) ? "checked" : set_value('type_auction')),
+        'checked' => ((!empty($tender_detail['type_auction']) && $tender_detail['type_auction'] == 3 || $group_id == 5) ? "checked" : set_value('type_auction')),
         'class' => 'validate[required]'
     );
     $type_auction_scandinavia = array(

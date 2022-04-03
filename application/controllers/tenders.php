@@ -126,7 +126,6 @@ class Tenders extends CI_Controller
             $data['tender_options'] = $data['tender_lotes'] = NULL;
             $data['all_tags'] = $this->tenders->get_all_tender_tags();
             $data['all_users'] = $this->tenders->get_all_users();
-            $data['user_group_id'] = $this->tank_auth->get_group_id();
             $data['group_id'] = $this->tank_auth->get_group_id();
             $this->template->view('tenders/add_form', $data);
         } else
@@ -1036,29 +1035,48 @@ class Tenders extends CI_Controller
                     if (!empty($lots)) {
 //                        print_r2($lots);
                         for ($al = 0; $al <= sizeof($lots) - 1; $al++) {
-                            if ($type_rate == 2 || $type_auction == 2) {
-                                if ($al % 5 == 0)
+                            if ($type_auction == 3) {
+                                if ($al % 6 == 0)
                                     $arr_lots[$l]['name'] = $lots[$al];
-                                if ($al % 5 == 1)
+                                if ($al % 6 == 1)
                                     $arr_lots[$l]['unit'] = $lots[$al];
-                                if ($al % 5 == 2)
+                                if ($al % 6 == 2)
                                     $arr_lots[$l]['need'] = $lots[$al];
-                                if ($al % 5 == 3)
+                                if ($al % 6 == 3)
+                                    $arr_lots[$l]['start_sum'] = 0;
+                                if ($al % 6 == 4) 
+                                    $arr_lots[$l]['product_link'] = $lots[$al];
+                                if ($al % 6 == 5) {
+                                    $arr_lots[$l]['step_lot'] = 0;
+                                    $l++;
+                                }
+                            } elseif ($type_rate == 2 || $type_auction == 2) {
+                                if ($al % 6 == 0)
+                                    $arr_lots[$l]['name'] = $lots[$al];
+                                if ($al % 6 == 1)
+                                    $arr_lots[$l]['unit'] = $lots[$al];
+                                if ($al % 6 == 2)
+                                    $arr_lots[$l]['need'] = $lots[$al];
+                                if ($al % 6 == 3)
                                     $arr_lots[$l]['start_sum'] = $lots[$al];
-                                if ($al % 5 == 4) {
+                                if ($al % 6 == 4) 
+                                    $arr_lots[$l]['product_link'] = '';
+                                if ($al % 6 == 5) {
                                     $arr_lots[$l]['step_lot'] = $lots[$al];
                                     $l++;
                                 }
                             } else {
-                                if ($al % 5 == 0)
+                                if ($al % 6 == 0)
                                     $arr_lots[$l]['name'] = $lots[$al];
-                                if ($al % 5 == 1)
+                                if ($al % 6 == 1)
                                     $arr_lots[$l]['unit'] = $lots[$al];
-                                if ($al % 5 == 2)
+                                if ($al % 6 == 2)
                                     $arr_lots[$l]['need'] = $lots[$al];
-                                if ($al % 5 == 3)
+                                if ($al % 6 == 3)
                                     $arr_lots[$l]['start_sum'] = $lots[$al];
-                                if ($al % 5 == 4) {
+                                if ($al % 6 == 4) 
+                                    $arr_lots[$l]['product_link'] = '';
+                                if ($al % 6 == 5) {
                                     $arr_lots[$l]['step_lot'] = 0;
                                     $l++;
                                 }
@@ -1073,11 +1091,20 @@ class Tenders extends CI_Controller
                     $new_lot_unit = $this->input->post('new_lot_unit');
                     $new_lot_need = $this->input->post('new_lot_need');
                     $new_lot_start_sum = $this->input->post('new_lot_start_sum');
+                    $new_lot_product_link = $this->input->post('new_lot_product_link');
                     //print_r2($_POST);
                     $new_lot_step_lot = $this->input->post('new_lot_step_lot');
                     if (empty($new_lot_step_lot)) $new_lot_step_lot = 0;
+                    if (empty($new_lot_product_link)) $new_lot_product_link = '';
                     if (!empty($new_lot_name) || !empty($new_lot_unit) || !empty($new_lot_need) || !empty($new_lot_start_sum) || !empty($new_lot_step_lot)) {
-                        $this->tenders->add_lotes(array(0 => array("name" => $new_lot_name, "unit" => $new_lot_unit, "need" => $new_lot_need, "start_sum" => $new_lot_start_sum, "step_lot" => $new_lot_step_lot)), $tender_id);
+                        $this->tenders->add_lotes(array(0 => array(
+                            "name" => $new_lot_name, 
+                            "unit" => $new_lot_unit, 
+                            "need" => $new_lot_need, 
+                            "start_sum" => $new_lot_start_sum, 
+                            "step_lot" => $new_lot_step_lot,
+                            "product_link" => $new_lot_product_link
+                        )), $tender_id);
                     }
 
                     // Если аукцион перевели в "Стандартная ставка" и "Открытые торги", то обнулить все шаги лотов
