@@ -105,6 +105,10 @@ class Tenders extends CI_Controller
                 break;
         }
 
+        foreach ($data['tenders_list'] as $value) {
+            $data["tenders_categories"][] = $this->tenders->get_tenders_tags($value["id"]);
+        }
+
         $this->template->view('tenders/list', $data);
     }
 
@@ -122,6 +126,7 @@ class Tenders extends CI_Controller
             $data['tender_options'] = $data['tender_lotes'] = NULL;
             $data['all_tags'] = $this->tenders->get_all_tender_tags();
             $data['all_users'] = $this->tenders->get_all_users();
+            $data['group_id'] = $this->tank_auth->get_group_id();
             $this->template->view('tenders/add_form', $data);
         } else
             redirect('');
