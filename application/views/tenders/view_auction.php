@@ -68,7 +68,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 <?php endif; ?>
             </td>
         </tr>
-        <?php if(($group_id == 2 && $tender_author == TRUE) || $group_id == 3):?>
+        <?php if(($group_id == 2 && $tender_author == TRUE) || $group_id == 3 || $group_id == 5):?>
             <tr>
                 <td class="td_left"><strong>Допущенные участники:</strong></td>
                 <td>
@@ -117,7 +117,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 </td>
             </tr>
         <?php endif; ?>
-        <?php if ((($group_id == 2 && $tender_author == TRUE) || $group_id == 3) && $game_tender == TRUE) {
+        <?php if ((($group_id == 2 && $tender_author == TRUE) || $group_id == 3 || $group_id == 5) && $game_tender == TRUE) {
             ?>
             <tr>
                 <td class="td_left" style="vertical-align: top;"><strong>Документы:</strong></td>
@@ -137,7 +137,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         ?>
     </table>
     <?php
-    if (($group_id == 2 && $tender_author == TRUE) || $group_id == 3) {
+    if (($group_id == 2 && $tender_author == TRUE) || $group_id == 3 || $group_id == 5) {
         ?>
         <p style="margin: 0; padding: 10px 0 0 0;">
         <?php if ($game_tender == FALSE) : ?>
@@ -154,9 +154,9 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         <?php endif; ?>
         </p>
         <?php
-    } // if (($group_id == 2 && $tender_author == TRUE) || $group_id == 3) {
+    } // if (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) {
 
-    if (($start_tender == false && $game_tender == false) && ($group_id == 1)):?>
+    if (($start_tender == false && $game_tender == false) && ($group_id == 1 OR $group_id == 6)):?>
         <h4>Дополнительные условия к аукциону</h4>
         <table class="reg tablesorter" id="options_show">
             <thead>
@@ -205,8 +205,8 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         </table>
     <?php endif;
     // Начался тендер?
-    if ($start_tender == TRUE || (($group_id == 2 && $tender_author == TRUE) || $group_id == 3)) {
-        if (($group_id == 2 && $tender_author == FALSE) || $group_id == 1) {
+    if ($start_tender == TRUE || (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3)) {
+        if (($group_id == 2 && $tender_author == FALSE) || $group_id == 1 || $group_id == 6) {
             echo form_open("/tenders/save_terms/", array('id' => 'termtender-form'), array('term_tender_id' => $tender_id));
         }
         ?>
@@ -215,10 +215,10 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             <thead>
             <tr>
                 <?php
-                if (($group_id == 2 && $tender_author == TRUE) || $group_id == 3)
+                if (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3)
                     echo "				<th>Участник</th>";
 
-                if (!empty($tender_results_options) && ($group_id == 2 && $tender_author == TRUE) || $group_id == 3) {
+                if (!empty($tender_results_options) && ($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) {
                     if (!empty($tender_options))
                         foreach ($tender_options as $key => $value) {
                             echo "				<th>" . $value['name_field'] . "</th>";
@@ -232,7 +232,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             </thead>
             <tbody>
             <?php
-            if (!empty($tender_results_options) && (($group_id == 2 && $tender_author == TRUE) || $group_id == 3)) {
+            if (!empty($tender_results_options) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3)) {
                 // Показываем результаты
                 foreach ($tender_results_options as $key => $value) {
                     echo "			<tr>
@@ -249,9 +249,9 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                     echo "			</tr>";
 
                 } // foreach ($tender_options as $key => $value) {
-            } // if ( !empty($tender_results_options) && (($group_id == 2 && $tender_author == TRUE) || $group_id == 3) )
+            } // if ( !empty($tender_results_options) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) )
             else {
-                if (($group_id == 2 && $tender_author == TRUE) || $group_id == 3) {
+                if (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) {
                     echo "<tr><td colspan=\"" . (count($tender_options) + 1) . "\" style=\"text-align: center;\">Участников в данном аукционе не было.</td></tr>";
                 } else {
                     // Заполняем допусловия
@@ -286,19 +286,19 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             </tbody>
         </table>
         <?php
-        if ((($group_id == 2 && $tender_author == FALSE) || $group_id == 1) && $game_tender == FALSE) {
+        if ((($group_id == 2 && $tender_author == FALSE) || $group_id == 1 || $group_id == 6) && $game_tender == FALSE) {
             echo "	<p style=\"margin: 0; padding: 0; text-align: right\">" . form_reset('cancel', 'Отмена', 'class="button"') . "&nbsp;" . form_submit('term', 'Выполним такие условия', 'class="button"') . "</p>";
             echo form_close();
         }
 
-        if (($group_id == 2 && $tender_author == FALSE) || $group_id == 1) {
+        if (($group_id == 2 && $tender_author == FALSE) || $group_id == 1 || $group_id == 6) {
             echo form_open("#", array('id' => 'runtender-form'), array('tender_id' => $tender_id));
         }
         ?>
 
         <h4>
             Лоты
-            аукциона <?php echo((($group_id == 2 && $tender_author == TRUE) || $group_id == 3) ? " (<a href=\"/tenders/show_history/" . $tender_id . "\" target=\"_blank\">история ставок</a>)" : ""); ?>
+            аукциона <?php echo((($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) ? " (<a href=\"/tenders/show_history/" . $tender_id . "\" target=\"_blank\">история ставок</a>)" : ""); ?>
         </h4>
         <table class="reg tablesorter" id="lots_show">
             <thead>
@@ -311,7 +311,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
                     echo "				<th>Шаг ставки, руб.</th>\n";
 
-                if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || $group_id == 3)) {
+                if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3)) {
                     // Колонки для администраторов и администраторов торгов (авторов)
                     echo "				<th>Лучшая цена, руб.</th>\n";
                     echo "				<th>Предлагает</th>\n";
@@ -332,7 +332,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             </thead>
             <tbody>
             <?php
-            if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || $group_id == 3)) {
+            if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3)) {
                 // Показываем результаты для администраторов и администраторов торгов (авторов)
                 if (!empty($tender_lotes))
                     foreach ($tender_lotes as $key => $value) {
@@ -471,7 +471,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
 
             echo "				<td>" . (float)$total_price . " руб.</td>\n";
 
-            if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || $group_id == 3))
+            if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3))
                 echo "				<td>&nbsp;</td>\n";
             else {
                 if ($tender_lotes_user && $game_tender == FALSE)
@@ -484,17 +484,17 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             </tbody>
         </table>
         <?php
-        if ((($group_id == 2 && $tender_author == FALSE) || $group_id == 1) && $game_tender == FALSE) {
+        if ((($group_id == 2 && $tender_author == FALSE) || $group_id == 1 || $group_id == 6) && $game_tender == FALSE) {
             echo "	<p style=\"margin: 0; padding: 0; text-align: right\">" . form_reset('cancel', 'Отмена', 'class="button"') . "&nbsp;" . form_submit('run', 'Сделать ставку', 'class="button"') . "</p>";
             echo form_close();
         }
 
-    } // if ($start_tender == FALSE || (($group_id == 2 && $tender_author == TRUE) || $group_id == 3) )
+    } // if ($start_tender == FALSE || (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) )
     ?>
 
     <?php
     if ($tender_detail['users_visible'] == 1 || ($group_id == 2 && $tender_author == TRUE) || $group_id == 3 || ($game_tender == TRUE && !empty($tender_detail['winner']))) {
-        if (!empty($tender_members) && ($group_id == 2 && $tender_author == TRUE) || $group_id == 3) {
+        if (!empty($tender_members) && ($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) {
             echo form_open("/tenders/winner/", array('id' => 'wintender-form'), array('tender_id' => $tender_id));
         }
         ?>
@@ -510,7 +510,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 <?php echo ($group_id == 2 || $group_id == 3)?"<th>ФИО</th>":"";?>
                 <th>Предложение</th>
                 <?php
-                if (($group_id == 2 && $tender_author == TRUE) || $group_id == 3) {
+                if (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) {
                     echo "				<th>Победитель</th>\n";
                 }
                 ?>
@@ -527,7 +527,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                     echo ($group_id == 2 || $group_id == 3)?"<td>".$value['phone']."</td>":"";
                     echo ($group_id == 2 || $group_id == 3)?"<td>".$value['director_name']."</td>":"";
 
-                    echo "</td><td style=\"text-align: center;\">" . (!empty($value['total_sum']) ? $value['total_sum'] : "0.00") . "</td>" . ((($group_id == 2 && $tender_author == TRUE) || $group_id == 3) ? "<td style=\"text-align: center;\"><input type=\"radio\" name=\"victory_member\" value=\"" . $value['user_id'] . "\" " . (!empty($value['leader']) && $value['leader'] == 1 ? "checked=\"checked\"" : "") . " /></td>" : "") . "</tr>\n";
+                    echo "</td><td style=\"text-align: center;\">" . (!empty($value['total_sum']) ? $value['total_sum'] : "0.00") . "</td>" . ((($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) ? "<td style=\"text-align: center;\"><input type=\"radio\" name=\"victory_member\" value=\"" . $value['user_id'] . "\" " . (!empty($value['leader']) && $value['leader'] == 1 ? "checked=\"checked\"" : "") . " /></td>" : "") . "</tr>\n";
                     $i++;
                 }
             } else {
@@ -553,7 +553,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             </tbody>
         </table>
         <?php
-        if (!empty($tender_members) && (($group_id == 2 && $tender_author == TRUE) || $group_id == 3)) {
+        if (!empty($tender_members) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3)) {
             ?>
             <p style="margin: 0; text-align: right;"><?php echo form_submit('winner', 'Выбранный участник — победитель', "class=\"button\" onclick=\"noty({ animateOpen: {opacity: 'show'}, animateClose: {opacity: 'hide'}, layout: 'center', text: 'Вы уверены, что хотите выбрать участника победителем?', buttons: [ {type: 'btn btn-mini btn-primary', text: 'Да!', click: function(\$noty) { \$noty.close(); $.SelectWinner($('input[name=victory_member]').val(), " . $tender_id . "); } }, {type: 'btn btn-mini btn-danger', text: 'Отмена', click: function(\$noty) { \$noty.close(); } } ], closable: false, timeout: false }); return false;\""); ?></p>
             <?php
@@ -562,7 +562,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         ?>
 
         <?php
-        if ((($group_id == 2 && $tender_author == TRUE) || $group_id == 3) && $game_tender == TRUE) {
+        if ((($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) && $game_tender == TRUE) {
             echo form_open("/classes/generate_doc.php", array('id' => 'protocol-form'), array('tender_id' => $tender_id, 'user_id' => $user_id));
             ?>
             <h4>Протокол аукциона</h4>
@@ -600,7 +600,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             <?php echo form_close(); ?>
 
             <?php
-        } // if ( (($group_id == 2 && $tender_author == TRUE) || $group_id == 3) && $game_tender == TRUE ) {
+        } // if ( (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) && $game_tender == TRUE ) {
     } // if ($tender_detail['users_visible'] == 1 || ($group_id == 2 && $tender_author == TRUE) || $group_id == 3 ) {
 } // if ($no_tender == TRUE)
 ?>
