@@ -193,6 +193,29 @@
                     }
                 }
 
+                function changeRateIT(e) {
+                    const input = $("#type_rate_it");
+                    if (!input.is(":checked")) {
+                        $("#type_auction_scandinavia, #type_auction_plus").fadeIn();
+                        $('label[for="type_auction_scandinavia"], label[for="type_auction_plus"]').fadeIn();
+                        $("#type_auction_scandinavia, #type_auction_plus").addClass("validate[required,custom[integer]]");
+                        $('.col_product_link').hide();
+                        $('.col_start_sum').fadeIn();
+                        $('#options #options_2, #options #options_3').fadeIn();
+
+                    } else {
+                        $("#type_auction_scandinavia, #type_auction_plus").hide();
+                        $('label[for="type_auction_scandinavia"], label[for="type_auction_plus"]').hide();
+                        $("#type_auction_scandinavia, #type_auction_plus").removeClass("validate[required,custom[integer]]");
+                        $('.col_product_link').fadeIn();
+                        $('.col_start_sum').hide();
+                        $('#options #options_2, #options #options_3').hide();
+                    }
+                }
+
+                $('[name="type_auction"]').on('input', changeRateIT);
+                changeRateIT();
+
                 $("#type_auction_scandinavia").click(function () {
                     scanMinute(this);
                 });
@@ -286,20 +309,46 @@
                     var new_lot_unit = $("#new_lot_unit").val();
                     var new_lot_need = $("#new_lot_need").val();
                     var new_lot_start_sum = $("#new_lot_start_sum").val();
+                    var new_lot_product_link = $("#new_lot_product_link").val();
                     var new_lot_step_lot = $("#new_lot_step_lot").val();
                     var tr_lots = $("#lots tbody tr").length;
-
-                    if (( new_lot_name.length > 0 && new_lot_unit.length > 0 && new_lot_need.length > 0 && new_lot_start_sum.length > 0 && $("#lots th.col_rate_step").is(":visible") == false && new_lot_step_lot.length == 0 ) || ( new_lot_name.length > 0 && new_lot_unit.length > 0 && new_lot_need.length > 0 && new_lot_start_sum.length > 0 && $("#lots th.col_rate_step").is(":visible") == true && new_lot_step_lot.length > 0 )) {
-                        html = "<tr id=\"lots_" + (tr_lots + 1) + "\"><td>" + new_lot_name + "</td><td>" + new_lot_unit + "</td><td>" + new_lot_need + "</td><td>" + new_lot_start_sum + "</td><td class=\"col_rate_step\">" + new_lot_step_lot + "</td><td><a href=\"\" class=\"button-delete\" title=\"Удалить\" onclick=\"noty({ animateOpen: {opacity: 'show'}, animateClose: {opacity: 'hide'}, layout: 'center', text: 'Вы уверены, что хотите удалить лот из аукциона?', buttons: [ {type: 'btn btn-mini btn-primary', text: 'Удалить', click: function(\$noty) { \$noty.close(); $.DeleteLot(" + (tr_lots + 1) + "); } }, {type: 'btn btn-mini btn-danger', text: 'Отмена', click: function(\$noty) { \$noty.close(); } } ], closable: false, timeout: false }); return false;\"></a></td></tr>";
+                    console.log($('.col_product_link').is(":visible"));
+                    if (( 
+                            new_lot_name.length > 0 
+                            && new_lot_unit.length > 0 
+                            && new_lot_need.length > 0 
+                        ) 
+                        && ( 
+                            ( $("#lots th.col_rate_step").is(":visible") == false 
+                            && new_lot_step_lot.length == 0) 
+                            || ($("#lots th.col_rate_step").is(":visible") == true
+                            && new_lot_step_lot.length > 0) 
+                            )
+                        && ( 
+                            ( $("#lots th.col_start_sum").is(":visible") == false 
+                            && new_lot_start_sum.length == 0) 
+                            || ($("#lots th.col_start_sum").is(":visible") == true
+                            && new_lot_start_sum.length > 0) 
+                            )
+                        && ( 
+                            ( $("#lots th.col_product_link").is(":visible") == false 
+                            && new_lot_product_link.length == 0) 
+                            || ($("#lots th.col_product_link").is(":visible") == true
+                            && new_lot_product_link.length > 0) 
+                            )
+                        ) {
+                        html = "<tr id=\"lots_" + (tr_lots + 1) + "\"><td>" + new_lot_name + "</td><td>" + new_lot_unit + "</td><td>" + new_lot_need + '</td><td class="col_start_sum">' + new_lot_start_sum + '</td><td class="col_product_link">' + new_lot_product_link + '</td><td class=\"col_rate_step\">' + new_lot_step_lot + "</td><td><a href=\"\" class=\"button-delete\" title=\"Удалить\" onclick=\"noty({ animateOpen: {opacity: 'show'}, animateClose: {opacity: 'hide'}, layout: 'center', text: 'Вы уверены, что хотите удалить лот из аукциона?', buttons: [ {type: 'btn btn-mini btn-primary', text: 'Удалить', click: function(\$noty) { \$noty.close(); $.DeleteLot(" + (tr_lots + 1) + "); } }, {type: 'btn btn-mini btn-danger', text: 'Отмена', click: function(\$noty) { \$noty.close(); } } ], closable: false, timeout: false }); return false;\"></a></td></tr>";
                         $("#lots tbody").append(html);
                         $("#lots").trigger("update");
                         $("#new_lot_name").val("");
                         $("#new_lot_unit").val("");
                         $("#new_lot_need").val("");
                         $("#new_lot_start_sum").val("");
+                        $("#new_lot_product_link").val("");
                         $("#new_lot_step_lot").val("");
                         //rateStep($("input[name=type_rate]:checked"));
                         rateEbay($("input[name=type_auction]:checked"));
+                        changeRateIT();
                     }
                 }
 
@@ -365,7 +414,7 @@
                         var arr_options = new Array();
                         var k = 0;
                         $("#options tbody tr").find('td').each(function (i) {
-                            if ($(this).text() != "") {
+                            if ($(this).text() != "" && $(this).is(":visible")) {
                                 arr_options[k] = $(this).text();
                                 k++;
                             }
@@ -392,6 +441,7 @@
                                 type_rate: $("input[name=type_rate]:checked").val(),
                                 type_auction: $("input[name=type_auction]:checked").val(),
                                 type_auction_scandinavia: $("#type_auction_scandinavia:checked").val(),
+                                type_rate_it: $("#type_rate_it:checked").val(),
                                 type_auction_plus: $("#type_auction_plus:checked").val(),
                                 tender_minute_end: $("#tender_minute_end").val(),
                                 scan_minute: $("#scan_minute").val(),

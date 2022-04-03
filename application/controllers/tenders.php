@@ -25,8 +25,16 @@ class Tenders extends CI_Controller
         }
         $data['all_tags'] = $this->tenders->get_all_tender_tags();
 
-        $data['selected_tag'] = $selected_tag;
+        $is_bidder = $this->tank_auth->is_logged_in() && $this->tank_auth->get_group_id() == 6;
 
+        $data['selected_tag'] = $selected_tag ? $selected_tag : ($is_bidder ? 27 : null);
+
+        if (!$is_bidder) {
+            $data['all_tags'] = array_filter($data['all_tags'], function($item) {
+                return $item['id'] != 27;
+            });
+        }
+        
         $date_from = null;
         if (!empty($_GET['from'])) {
             $date = DateTime::createFromFormat('d.m.Y', $_GET['from']);
