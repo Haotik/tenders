@@ -122,6 +122,7 @@ class Tenders extends CI_Controller
             $data['tender_options'] = $data['tender_lotes'] = NULL;
             $data['all_tags'] = $this->tenders->get_all_tender_tags();
             $data['all_users'] = $this->tenders->get_all_users();
+            $data['user_group_id'] = $this->tank_auth->get_group_id();
             $this->template->view('tenders/add_form', $data);
         } else
             redirect('');

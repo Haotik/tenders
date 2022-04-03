@@ -192,7 +192,14 @@
                         $("#type_rate_standard").attr("checked", "checked");
                     }
                 }
-
+                function parseDateToStr(date) {
+                    let day = date.getDate(),
+                        month = date.getMonth() + 1,
+                        year = date.getFullYear();
+                    day = day < 10 ? '0' + day : day;
+                    month = month < 10 ? '0' + month : month;
+                    return `${day}.${month}.${year}`;
+                }
                 function changeRateIT(e) {
                     const input = $("#type_rate_it");
                     if (!input.is(":checked")) {
@@ -200,6 +207,7 @@
                         $('label[for="type_auction_scandinavia"], label[for="type_auction_plus"]').fadeIn();
                         $("#type_auction_scandinavia, #type_auction_plus").addClass("validate[required,custom[integer]]");
                         $('.col_product_link').hide();
+                        $('.lots-file-import').hide();
                         $('.col_start_sum').fadeIn();
                         $('#options #options_2, #options #options_3').fadeIn();
 
@@ -208,8 +216,13 @@
                         $('label[for="type_auction_scandinavia"], label[for="type_auction_plus"]').hide();
                         $("#type_auction_scandinavia, #type_auction_plus").removeClass("validate[required,custom[integer]]");
                         $('.col_product_link').fadeIn();
+                        $('.lots-file-import').fadeIn();
                         $('.col_start_sum').hide();
                         $('#options #options_2, #options #options_3').hide();
+                        const beginDate = parseDateToStr(new Date());
+                        const endDate = parseDateToStr(new Date(Date.now() + 48 * 3600 * 1000));
+                        $("#begin_date").val(beginDate);
+                        $("#end_date").val(endDate);
                     }
                 }
 
@@ -391,6 +404,48 @@
                     ?>
                     return false;
                 }
+
+                $('input[name="lots_file"]').change(function(e) {
+                        // Получить загруженный объект файла
+                    const { files } = e.target;
+                        // Чтение файла через объект FileReader
+                    const fileReader = new FileReader();
+                    fileReader.onload = event => {
+                    try {
+                        const { result } = event.target;
+                            // Читаем весь объект таблицы Excel в двоичном потоке
+                        const workbook = XLSX.read(result, { type: 'binary' });
+                            let data = []; // сохранить полученные данные
+                            // проходим каждый лист для чтения (здесь по умолчанию читается только первый лист)
+                        for (const sheet in workbook.Sheets) {
+                            if (workbook.Sheets.hasOwnProperty(sheet)) {
+                                    // Используем метод sheet_to_json для преобразования Excel в данные JSON
+                                
+                                data = data.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet], {header: 1}));
+                                    // break; // Если берется только первая таблица, раскомментируйте эту строку
+                            }
+                        }
+                        console.log(data);
+
+                        let html = data.map((item, i) => {
+                            const [ new_lot_name, new_lot_unit, new_lot_need, new_lot_product_link ] = item;
+                            var tr_lots = $("#lots tbody tr").length + 1;
+                            return "<tr id=\"lots_" + (tr_lots + i) + "\"><td>" + new_lot_name + "</td><td>" + new_lot_unit + "</td><td>" + new_lot_need + '</td><td class="col_start_sum"></td><td class="col_product_link">' + new_lot_product_link + '</td><td class=\"col_rate_step\">' + '' + "</td><td><a href=\"\" class=\"button-delete\" title=\"Удалить\" onclick=\"noty({ animateOpen: {opacity: 'show'}, animateClose: {opacity: 'hide'}, layout: 'center', text: 'Вы уверены, что хотите удалить лот из аукциона?', buttons: [ {type: 'btn btn-mini btn-primary', text: 'Удалить', click: function(\$noty) { \$noty.close(); $.DeleteLot(" + (tr_lots + i) + "); } }, {type: 'btn btn-mini btn-danger', text: 'Отмена', click: function(\$noty) { \$noty.close(); } } ], closable: false, timeout: false }); return false;\"></a></td></tr>";
+                        }).join("\n");
+
+                        $('.lots-table tbody').prepend(html);
+                        rateEbay($("input[name=type_auction]:checked"));
+                        changeRateIT();
+                        e.target.closest(".lots-file-import").innerHTML = e.target.closest(".lots-file-import").innerHTML;
+                    } catch (err) {
+                        // Соответствующие запросы о неправильном типе ошибки файла могут быть брошены сюда
+                        console.log ('Неверный тип файла');
+                        return;
+                    }
+                    };
+                        // Открыть файл в двоичном режиме
+                    fileReader.readAsBinaryString(files[0]);
+                })
 
                 // Проверяем форму
                 $("#addtender-form").submit(function () {

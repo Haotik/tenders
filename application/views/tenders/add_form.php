@@ -95,7 +95,7 @@ if ($no_tender == TRUE) {
         'name' => 'type_auction',
         'id' => 'type_rate_it',
         'value' => 3,
-        'checked' => ((!empty($tender_detail['type_auction']) && $tender_detail['type_auction'] == 3) ? "checked" : set_value('type_auction')),
+        'checked' => ((!empty($tender_detail['type_auction']) && $tender_detail['type_auction'] == 3 || $user_group_id == 5) ? "checked" : set_value('type_auction')),
         'class' => 'validate[required]'
     );
     $type_auction_scandinavia = array(
@@ -296,7 +296,12 @@ if ($no_tender == TRUE) {
     </table>
 
     <h4>Лоты аукциона</h4>
-    <table class="reg tablesorter" id="lots">
+    <button class="btn btn-primary lots-file-import fileinput-button">
+        <i class="icon-upload icon-white"></i>
+        <span>Загрузить и заполнить</span>
+        <input type="file" name="lots_file" accept=".xls,.xlsx">
+    </button>
+    <table class="reg tablesorter lots-table" id="lots">
         <thead>
         <tr>
             <th>Наименование</th>
@@ -489,6 +494,7 @@ if ($no_tender == TRUE) {
 
     </script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/js/upload/jquery.ui.widget.js"></script>
     <script src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
     <script src="/js/upload/load-image.js"></script>
