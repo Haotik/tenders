@@ -1069,7 +1069,7 @@
 				<input type=\"submit\" value=\"Выход\" class=\"input\" />
 			</form>";
 
-                if ($group_id == 1) {
+                if ($group_id == 1 || $group_id == 6) {
                     ?>
                     <ul>
                         <li><span>Аукционы</span></li>
@@ -1082,7 +1082,7 @@
                         <li><a href="/responses/">Отзывы</a></li>
                     </ul>
                     <?php
-                } elseif ($group_id == 2 || $group_id == 3 || $group_id == 5 || $group_id == 6 || $group_id ==7) {
+                } elseif ($group_id == 2 || $group_id == 3 || $group_id == 5 || $group_id ==7) {
                     ?>
                     <ul>
                         <li><span>Инструкция</span></li>
