@@ -130,6 +130,15 @@ if ($no_tender == TRUE) {
         'value' => 1,
         'checked' => ((!empty($tender_detail['users_visible']) && $tender_detail['users_visible'] == 1) ? "checked" : set_value('users_visible'))
     );
+
+    if ($group_id == 5) {
+        foreach ($all_users as $user){
+            if ($user["group_id"] == 6) {
+                $actual_users[] = $user;
+            }
+        }
+        $all_users = $actual_users;
+    }
     ?>
     <h4><?php echo $page_title; ?></h4>
 
@@ -357,15 +366,20 @@ if ($no_tender == TRUE) {
             <?php endif;?>
         <?php endif;?>
     </select>
-
     <h4 style="margin-top:20px;">Указать пользователей для аукциона</h4>
     <select id="add_tender_users" class="select2" multiple="multiple" name="tender_users"
             style="width:100%">
-        <?php if ($all_users != null): ?>
-            <?php foreach ($all_users as $user): ?>
-                <option <?php echo (!empty($tender_users) && in_array($user['user_id'], $tender_users)) ? "selected" : ""; ?> value="<?php echo $user['user_id']; ?>"><?php echo $user['name']; ?></option>
-            <?php endforeach; ?>
-        <?php endif; ?>
+        <?php if ($all_users != null){?>
+            <?if ($group_id == 5){?>
+                <?php foreach ($all_users as $user): ?>
+                    <option selected = "selected" value="<?php echo $user['user_id']; ?>"><?php echo $user['name']; ?></option>
+                <?php endforeach; ?>
+            <?} else {?>
+                <?php foreach ($all_users as $user): ?>
+                    <option <?php echo (!empty($tender_users) && in_array($user['user_id'], $tender_users)) ? "selected" : ""; ?> value="<?php echo $user['user_id']; ?>"><?php echo $user['name']; ?></option>
+                <?php endforeach; ?>
+            <?php }?>
+        <?php }?>
     </select>
 
     <p style="margin: 0; padding: 20px 0 0 0;"><?php echo form_submit('save', 'Сохранить', 'class="button", id="addtender_submit_btn"'); ?>

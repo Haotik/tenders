@@ -7,10 +7,7 @@ $is_admin = (($this->tank_auth->is_logged_in() && $this->tank_auth->get_group_id
 $all_tags = $this->tenders->get_all_tender_tags(); //почему то из контролера приходит не весь список
 $user_id = $this->tank_auth->get_user_id();
 $actual_tenders = [];
-if ($group_id == 6) {
-    // Участник ИТ - группа показывается по умолчанию
-    // А что он должен видеть то?
-} else if($group_id == 5){
+if($group_id == 5){
     
     for($i = 0;$i < count($tenders_list);$i++){
         if ($tenders_list[$i]["user_id"] == $user_id) {
@@ -181,9 +178,14 @@ if ($group_id == 6) {
                 <td><?php echo isset($tender_info[0]['step_lot']) ? $tender_info[0]['step_lot'] : '' ?></td>
             <?php endif; ?>
 
-            <?php if ($group_id == 2 || $group_id == 3) {
+            <?php if ($group_id == 2 || $group_id == 3 || $group_id == 5) {
                 echo "			<td>\n";
-                if (($this->uri->segments[2] == 'previous' && $group_id == 2) || (($this->uri->segments[2] == 'previous' || $this->uri->segments[2] == 'current') && $group_id == 3)) {
+                if (($this->uri->segments[2] == 'previous' && $group_id == 2) 
+                    || 
+                    (($this->uri->segments[2] == 'previous' || $this->uri->segments[2] == 'current') && $group_id == 3)
+                    ||
+                    (($this->uri->segments[2] == 'previous' || $this->uri->segments[2] == 'current') && $group_id == 5)
+                ) {
                     echo anchor('/tenders/edit/' . $value['id'] . '/', " ", "class=\"button-edit\" title=\"Редактировать тендер\"");
                 }
 
