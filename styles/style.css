@@ -794,3 +794,6 @@ table.tablesorter tbody .is_deleted td {
 .date_picker_container input, .date_picker_container textarea{
     max-width: 120px;
 }   
+.lots-file-import {
+    margin-bottom: .5rem !important;
+}

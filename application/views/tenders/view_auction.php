@@ -71,7 +71,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         <tr>
             <td class="td_left"><strong>Торги:</strong></td>
             <td>
-                <?php echo ($tender_detail['type_auction'] == 1 ? "Открытые торги (стандартный механизм)" : "Полузакрытые торги (механизм «eBay»)") . ($tender_detail['type_auction_scandinavia'] == 1 ? " + Скандинавский аукцион" : "") . ($tender_detail['type_auction_plus'] == 1 ? " + Аукцион в «плюс»" : ""); ?>
+                <?php echo ($tender_detail['type_auction'] == 1 ? "Открытые торги (стандартный механизм)" : ($tender_detail['type_auction'] == 3 ? "Ставка ИТ" : "Полузакрытые торги (механизм «eBay»)") . ($tender_detail['type_auction_scandinavia'] == 1 ? " + Скандинавский аукцион" : "") . ($tender_detail['type_auction_plus'] == 1 ? " + Аукцион в «плюс»" : "")); ?>
             </td>
         </tr>
         <tr>
@@ -199,7 +199,12 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 <th>Наименование</th>
                 <th>Ед. изм.</th>
                 <th>Потребность</th>
-                <th>Начальная цена, руб.</th>
+                <?php if ($tender_detail['type_auction'] != 3): ?>
+                    <th>Начальная цена, руб.</th>
+                <?php endif; ?>
+                <?php if ($tender_detail['type_auction'] == 3): ?>
+                    <th>Ссылка на товар</th>
+                <?php endif; ?>
                 <?php if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2): ?>
                     <th>Шаг ставки, руб.</th>
                 <?php endif; ?>
@@ -212,7 +217,12 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                         <td><?php echo $value['name']; ?></td>
                         <td><?php echo $value['unit']; ?></td>
                         <td><?php echo $value['need']; ?></td>
-                        <td><?php echo $value['start_sum']; ?></td>
+                        <?php if ($tender_detail['type_auction'] != 3): ?>
+                            <td><?php echo $value['start_sum']; ?></td>
+                        <?php endif; ?>
+                        <?php if ($tender_detail['type_auction'] == 3): ?>
+                            <td><?php echo $value['product_link']; ?></td>
+                        <?php endif; ?>
                         <?php if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2): ?>
                             <td><?php echo $value['step_lot']; ?></td>
                         <?php endif; ?>
@@ -327,7 +337,12 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 <th>Наименование</th>
                 <th>Ед. изм.</th>
                 <th>Потребность</th>
-                <th>Начальная цена, руб.</th>
+                <?php if ($tender_detail['type_auction'] != 3): ?>
+                    <th>Начальная цена, руб.</th>
+                <?php endif; ?>
+                <?php if ($tender_detail['type_auction'] == 3): ?>
+                    <th>Ссылка на товар</th>
+                <?php endif; ?>
                 <?php
                 if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
                     echo "				<th>Шаг ставки, руб.</th>\n";
@@ -357,7 +372,14 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 // Показываем результаты для администраторов и администраторов торгов (авторов)
                 if (!empty($tender_lotes))
                     foreach ($tender_lotes as $key => $value) {
-                        echo "<tr id=\"lots_" . $value['id'] . "\"><td>" . $value['name'] . "</td><td>" . $value['unit'] . "</td><td>" . $value['need'] . "</td><td>" . $value['start_sum'] . "</td>" . ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2 ? "<td>" . $value['step_lot'] . "</td>" : "") . "<td>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td><td>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['name'] : "нет") . "</td></tr>\n";
+                        echo "<tr id=\"lots_" . $value['id'] . "\"><td>" 
+                        . $value['name'] . "</td><td>" 
+                        . $value['unit'] . "</td><td>" 
+                        . $value['need'] . "</td><td>" 
+                        . ($tender_detail['type_auction'] == 3 ? $value['product_link'] : $value['start_sum']) . "</td>" 
+                        . ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2 ? "<td>" . $value['step_lot'] . "</td>" : "") . "<td>" 
+                        . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td><td>" 
+                        . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['name'] : "нет") . "</td></tr>\n";
                     } // foreach ($tender_results_lotes as $key => $value) {
             } // if ( !empty($tender_results_lotes) && ($group_id == 2 || $group_id == 3) )
             else {
@@ -365,7 +387,11 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 // Заполняем лоты аукциона (для участников)
                 if (!empty($tender_lotes)) {
                     foreach ($tender_lotes as $key => $value) {
-                        echo "<tr id=\"lots_" . $value['id'] . "\"><td>" . $value['name'] . "</td><td>" . $value['unit'] . "</td><td>" . $value['need'] . "</td><td>" . $value['start_sum'] . "</td>";
+                        echo "<tr id=\"lots_" . $value['id'] . "\"><td>" 
+                        . $value['name'] . "</td><td>" 
+                        . $value['unit'] . "</td><td>" 
+                        . $value['need'] . "</td><td>" 
+                        . ($tender_detail['type_auction'] == 3 ? $value['product_link'] : $value['start_sum']) . "</td>";
 
                         if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
                             echo "<td>" . $value['step_lot'] . "</td>";
