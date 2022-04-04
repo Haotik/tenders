@@ -203,7 +203,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                             <td><?php echo $value['start_sum']; ?></td>
                         <?php endif; ?>
                         <?php if ($tender_detail['type_auction'] == 3): ?>
-                            <td><?php echo $value['product_link']; ?></td>
+                            <td><a href="<?php echo $value['product_link']; ?>" target="_blank">Ссылка</a></td>
                         <?php endif; ?>
                         <?php if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2): ?>
                             <td><?php echo $value['step_lot']; ?></td>
@@ -355,7 +355,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                         . $value['name'] . "</td><td>" 
                         . $value['unit'] . "</td><td>" 
                         . $value['need'] . "</td><td>" 
-                        . ($tender_detail['type_auction'] == 3 ? $value['product_link'] : $value['start_sum']) . "</td>" 
+                        . ($tender_detail['type_auction'] == 3 ? '<a href="' . $value['product_link'] . '" target="_blank">Ссылка</a>' : $value['start_sum']) . "</td>" 
                         . ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2 ? "<td>" . $value['step_lot'] . "</td>" : "") . "<td>" 
                         . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td><td>" 
                         . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['name'] : "нет") . "</td></tr>\n";
@@ -370,7 +370,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                         . $value['name'] . "</td><td>" 
                         . $value['unit'] . "</td><td>" 
                         . $value['need'] . "</td><td>" 
-                        . ($tender_detail['type_auction'] == 3 ? $value['product_link'] : $value['start_sum']) . "</td>";
+                        . ($tender_detail['type_auction'] == 3 ? '<a href="' . $value['product_link'] . '" target="_blank">Ссылка</a>' : $value['start_sum']) . "</td>";
 
                         if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
                             echo "<td>" . $value['step_lot'] . "</td>";
