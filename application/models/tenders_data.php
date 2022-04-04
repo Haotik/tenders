@@ -464,7 +464,7 @@ class Tenders_data extends CI_Model
         return NULL;
     }
 
-    function get_lotes_by_params($name, $unit, $need, $start_sum, $step_lot = 0, $tender_id)
+    function get_lotes_by_params($name, $unit, $need, $start_sum, $step_lot = 0, $tender_id,  $product_link = '')
     {
         $this->db->where('name', $name);
         $this->db->where('unit', $unit);
@@ -473,6 +473,7 @@ class Tenders_data extends CI_Model
         if (!empty($step_lot))
             $this->db->where('step_lot', $step_lot, FALSE);
         $this->db->where('tender_id', (int)$tender_id);
+        $this->db->where('product_link', $product_link);
 
         $query = $this->db->get($this->lotes_table_name);
         if ($query->num_rows() > 0) return $query->row_array();
@@ -486,14 +487,32 @@ class Tenders_data extends CI_Model
 //				$data[$k]['created'] = date("Y-m-d H:i:s");
 //				$data[$k]['tender_id'] = $tender_id;
 
-                $this->db->insert($this->lotes_table_name, array('created' => date("Y-m-d H:i:s"), 'tender_id' => (int)$tender_id, 'name' => $v['name'], 'unit' => $v['unit'], 'need' => $v['need'], 'start_sum' => $v['start_sum'], 'step_lot' => (!empty($v['step_lot']) ? $v['step_lot'] : "")));
+                $this->db->insert($this->lotes_table_name, array(
+                    'created' => date("Y-m-d H:i:s"),
+                    'tender_id' => (int)$tender_id, 
+                    'name' => $v['name'], 
+                    'unit' => $v['unit'], 
+                    'need' => $v['need'], 
+                    'start_sum' => (!empty($v['start_sum']) ? $v['start_sum'] : "0.00"), 
+                    'step_lot' => (!empty($v['step_lot']) ? $v['step_lot'] : ""),
+                    'product_link' => (!empty($v['product_link']) ? $v['product_link'] : "")
+                ));
             }
             return TRUE;
         } else {
             foreach ($data as $k => $v) {
-                $res_lot = $this->get_lotes_by_params($v['name'], $v['unit'], $v['need'], $v['start_sum'], $v['step_lot'], $tender_id);
+                $res_lot = $this->get_lotes_by_params($v['name'], $v['unit'], $v['need'], $v['start_sum'], $v['step_lot'], $tender_id, $v['product_link']);
                 if (empty($res_lot)) {
-                    $this->db->insert($this->lotes_table_name, array('created' => date("Y-m-d H:i:s"), 'tender_id' => (int)$tender_id, 'name' => $v['name'], 'unit' => $v['unit'], 'need' => $v['need'], 'start_sum' => (!empty($v['start_sum']) ? $v['start_sum'] : "0.00"), 'step_lot' => (!empty($v['step_lot']) ? $v['step_lot'] : "0.00")));
+                    $this->db->insert($this->lotes_table_name, array(
+                        'created' => date("Y-m-d H:i:s"), 
+                        'tender_id' => (int)$tender_id, 
+                        'name' => $v['name'], 
+                        'unit' => $v['unit'], 
+                        'need' => $v['need'], 
+                        'start_sum' => (!empty($v['start_sum']) ? $v['start_sum'] : "0.00"), 
+                        'step_lot' => (!empty($v['step_lot']) ? $v['step_lot'] : "0.00"),
+                        'product_link' => (!empty($v['product_link']) ? $v['product_link'] : "")
+                    ));
                 }
             }
             return TRUE;
