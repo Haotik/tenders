@@ -18,8 +18,8 @@ if($group_id == 5){
     //Администратор торгов - видит только свои аукционы 
 } else if ($group_id == 7 OR $group_id == 6) {
     // Аудитор - видит все ИТ аукционы
-    foreach ($tenders_categories[0] as $key => $value){
-        if ($value["tag_id"] == 27) {
+    foreach ($tenders_categories as $key => $value){
+        if ($value[0]["tag_id"] == 27) {
             $actual_tenders[] = $tenders_list[$key];
         }
     }

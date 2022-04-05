@@ -20,7 +20,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
     );
     ?>
     <h4><?php echo $page_title; ?></h4>
-
+<?print_r2($tender_detail);?>
     <table class="reg">
         <tr>
             <td colspan="2">
@@ -31,32 +31,32 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
 
         <tr>
             <td class="td_left"><strong>Номер аукциона:</strong></td>
-            <td>
+            <td class = ''>
                 <?php echo $tender_id; ?>
             </td>
         </tr>
         <tr>
             <td class="td_left"><strong>Наименование:</strong></td>
-            <td>
+            <td class = ''>
                 <?php echo $tender_detail['title']; ?>
             </td>
         </tr>
         <tr>
             <td class="td_left"><strong>Дата начала:</strong></td>
-            <td>
+            <td class = ''>
                 <?php echo date("d.m.Y H:i", strtotime($tender_detail['begin_date'])); ?>
             </td>
         </tr>
         <tr>
             <td class="td_left"><strong>Дата окончания:</strong></td>
-            <td>
+            <td class = ''>
                 <?php echo date("d.m.Y H:i", strtotime($tender_detail['end_date'])); ?>
             </td>
         </tr>
         <?php if ($game_tender == FALSE && $start_tender == TRUE) : ?>
             <tr>
                 <td class="td_left" style="color: red;"><strong>До окончания:</strong></td>
-                <td>
+                <td class = ''>
                     <script language="javascript"
                             src="/classes/countdown.php?id=<?php echo $tender_id; ?>&do=r"></script>
                 </td>
@@ -64,19 +64,19 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         <?php endif; ?>
         <tr>
             <td class="td_left"><strong>Ставка:</strong></td>
-            <td>
+            <td class = ''>
                 <?php echo($tender_detail['type_rate'] == 1 ? "Стандартная" : "Ставка не меньше шага"); ?>
             </td>
         </tr>
         <tr>
             <td class="td_left"><strong>Торги:</strong></td>
-            <td>
+            <td class = ''>
                 <?php echo ($tender_detail['type_auction'] == 1 ? "Открытые торги (стандартный механизм)" : ($tender_detail['type_auction'] == 3 ? "Ставка ИТ" : "Полузакрытые торги (механизм «eBay»)") . ($tender_detail['type_auction_scandinavia'] == 1 ? " + Скандинавский аукцион" : "") . ($tender_detail['type_auction_plus'] == 1 ? " + Аукцион в «плюс»" : "")); ?>
             </td>
         </tr>
         <tr>
             <td class="td_left"><strong>Категории:</strong></td>
-            <td>
+            <td class = ''>
                 <?php if (!empty($tender_tags)): ?>
                     <?php echo implode(', ', $tender_tags); ?>
                 <?php endif; ?>
@@ -85,7 +85,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         <?php if(($group_id == 2 && $tender_author == TRUE) || $group_id == 3 || $group_id == 5):?>
             <tr>
                 <td class="td_left"><strong>Допущенные участники:</strong></td>
-                <td>
+                <td class = ''>
                     <?php if (!empty($tender_users)): ?>
                         <?php echo implode(', ', $tender_users); ?>
                     <?php else:?>
@@ -105,7 +105,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             ?>
             <tr>
                 <td class="td_left" style="vertical-align: top;"><strong>Прилагаемые файлы:</strong></td>
-                <td>
+                <td class = ''>
                     <ol>
                         <?php
                         foreach ($tenders_documents as $key => $value) {
@@ -120,7 +120,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         <?php if (!empty($completed_protocol_documents)): ?>
             <tr>
                 <td class="td_left" style="vertical-align: top;"><strong>Протокол о завершении аукциона:</strong></td>
-                <td>
+                <td class = ''>
                     <ol>
                         <?php
                         foreach ($completed_protocol_documents as $key => $value) {
@@ -135,7 +135,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             ?>
             <tr>
                 <td class="td_left" style="vertical-align: top;"><strong>Документы:</strong></td>
-                <td>
+                <td class = ''>
                     <?php
                     if (is_file($_SERVER['DOCUMENT_ROOT'] . "/data/protocol/protocol_" . $tender_id . ".docx")) {
                         echo "<p style=\"margin: 0; padding: 0;\"><a href=\"/tenders/down/protocol/" . $tender_id . "\">Скачать Протокол комиссии (DOCX-файл)</a></p>";
@@ -186,7 +186,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             <?php if (!empty($tender_options)) : ?>
                 <?php foreach ($tender_options as $key => $value): ?>
                     <tr id="options_<?php echo $value['id']; ?>">
-                        <td><?php echo $value['name_field']; ?></td>
+                        <td class = ''><?php echo $value['name_field']; ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>
@@ -214,17 +214,17 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             <?php if (!empty($tender_lotes)): ?>
                 <?php foreach ($tender_lotes as $key => $value) : ?>
                     <tr id="lots_<?php echo $value['id']; ?>">
-                        <td><?php echo $value['name']; ?></td>
-                        <td><?php echo $value['unit']; ?></td>
-                        <td><?php echo $value['need']; ?></td>
+                        <td class = ''><?php echo $value['name']; ?></td>
+                        <td class = ''><?php echo $value['unit']; ?></td>
+                        <td class = ''><?php echo $value['need']; ?></td>
                         <?php if ($tender_detail['type_auction'] != 3): ?>
-                            <td><?php echo $value['start_sum']; ?></td>
+                            <td class = ''><?php echo $value['start_sum']; ?></td>
                         <?php endif; ?>
                         <?php if ($tender_detail['type_auction'] == 3): ?>
-                            <td><?php echo $value['product_link']; ?></td>
+                            <td class = ''><?php echo $value['product_link']; ?></td>
                         <?php endif; ?>
                         <?php if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2): ?>
-                            <td><?php echo $value['step_lot']; ?></td>
+                            <td class = ''><?php echo $value['step_lot']; ?></td>
                         <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
@@ -267,7 +267,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 // Показываем результаты
                 foreach ($tender_results_options as $key => $value) {
                     echo "			<tr>
-                    <td>";
+                    <td class = ''>";
                     foreach ($users_list as $u) {
                         if ($u['user_id'] == $key)
                             echo anchor('/auth/user_edit/' . $u['id'] . '/', $u['name']);
@@ -275,7 +275,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                     echo "				</td>";
                     if (!empty($tender_options))
                         foreach ($tender_options as $k => $v) {
-                            echo "				<td>" . (!empty($value[$v['id']]) ? ($value[$v['id']] == 'Y' ? 'Да' : $value[$v['id']]) : "Нет") . "</td>";
+                            echo "				<td class = ''>" . (!empty($value[$v['id']]) ? ($value[$v['id']] == 'Y' ? 'Да' : $value[$v['id']]) : "Нет") . "</td>";
                         }
                     echo "			</tr>";
 
@@ -290,8 +290,8 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                         foreach ($tender_options as $key => $value) {
                             ?>
                             <tr id="options_<?php echo $value['id']; ?>">
-                                <td><?php echo $value['name_field']; ?></td>
-                                <td>
+                                <td class = ''><?php echo $value['name_field']; ?></td>
+                                <td class = ''>
                                     <?php
                                     if ($game_tender == FALSE) {
                                         ?>
@@ -334,14 +334,14 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         <table class="reg tablesorter" id="lots_show">
             <thead>
             <tr>
-                <th>Наименование</th>
-                <th>Ед. изм.</th>
-                <th>Потребность</th>
+                <th class="name">Наименование</th>
+                <th class="unit">Ед. изм.</th>
+                <th class="">Потребность</th>
                 <?php if ($tender_detail['type_auction'] != 3): ?>
-                    <th>Начальная цена, руб.</th>
+                    <th class="">Начальная цена, руб.</th>
                 <?php endif; ?>
                 <?php if ($tender_detail['type_auction'] == 3): ?>
-                    <th>Ссылка на товар</th>
+                    <th class="">Ссылка на товар</th>
                 <?php endif; ?>
                 <?php
                 if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
@@ -372,13 +372,13 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 // Показываем результаты для администраторов и администраторов торгов (авторов)
                 if (!empty($tender_lotes))
                     foreach ($tender_lotes as $key => $value) {
-                        echo "<tr id=\"lots_" . $value['id'] . "\"><td>" 
-                        . $value['name'] . "</td><td>" 
-                        . $value['unit'] . "</td><td>" 
-                        . $value['need'] . "</td><td>" 
+                        echo "<tr id=\"lots_" . $value['id'] . "\"><td class = ''>" 
+                        . $value['name'] . "</td><td class = ''>" 
+                        . $value['unit'] . "</td><td class = ''>" 
+                        . $value['need'] . "</td><td class = ''>" 
                         . ($tender_detail['type_auction'] == 3 ? $value['product_link'] : $value['start_sum']) . "</td>" 
-                        . ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2 ? "<td>" . $value['step_lot'] . "</td>" : "") . "<td>" 
-                        . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td><td>" 
+                        . ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2 ? "<td class = ''>" . $value['step_lot'] . "</td>" : "") . "<td class = ''>" 
+                        . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td><td class = ''>"
                         . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['name'] : "нет") . "</td></tr>\n";
                     } // foreach ($tender_results_lotes as $key => $value) {
             } // if ( !empty($tender_results_lotes) && ($group_id == 2 || $group_id == 3) )
@@ -386,27 +386,28 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 //          var_dump($tender_results_lotes);
                 // Заполняем лоты аукциона (для участников)
                 if (!empty($tender_lotes)) {
+                    print_r2(@$tender_lotes[0]['name']);
                     foreach ($tender_lotes as $key => $value) {
-                        echo "<tr id=\"lots_" . $value['id'] . "\"><td>" 
-                        . $value['name'] . "</td><td>" 
-                        . $value['unit'] . "</td><td>" 
-                        . $value['need'] . "</td><td>" 
+                        echo "<tr id=\"lots_" . $value['id'] . "\"><td class = ''>" 
+                        . $value['name'] . "</td><td class = ''>" 
+                        . $value['unit'] . "</td><td class = ''>" 
+                        . $value['need'] . "</td><td class = ''>" 
                         . ($tender_detail['type_auction'] == 3 ? $value['product_link'] : $value['start_sum']) . "</td>";
 
                         if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
-                            echo "<td>" . $value['step_lot'] . "</td>";
+                            echo "<td class = ''>" . $value['step_lot'] . "</td>";
 
                         // Отображение лучшей цены по схеме Ebay
                         if ($tender_detail['type_auction'] == 2) {
                             if ((empty($tender_members) || count($tender_members) == 1) && $game_tender == FALSE)
-                                echo "<td>" . $value['start_sum'] . "</td>";
+                                echo "<td class = ''>" . $value['start_sum'] . "</td>";
                             elseif ($game_tender == FALSE) {
-                                echo "<td>" . ((!empty($tender_results_lotes_ebay[$value['id']]) && !empty($tender_lotes_user[$value['id']]) && $tender_lotes_user[$value['id']] > $tender_results_lotes_ebay[$value['id']]['best_value']) ? ((float)$tender_lotes_user[$value['id']] - (float)$value['step_lot']) : "") . ((!empty($tender_results_lotes_ebay_expensive[$value['id']]) && !empty($tender_lotes_user[$value['id']]) && $tender_lotes_user[$value['id']] < $tender_results_lotes_ebay_expensive[$value['id']]['expensive_value']) ? ((float)$tender_results_lotes_ebay_expensive[$value['id']]['expensive_value'] - (float)$value['step_lot']) : "") . "</td>";
+                                echo "<td class = ''>" . ((!empty($tender_results_lotes_ebay[$value['id']]) && !empty($tender_lotes_user[$value['id']]) && $tender_lotes_user[$value['id']] > $tender_results_lotes_ebay[$value['id']]['best_value']) ? ((float)$tender_lotes_user[$value['id']] - (float)$value['step_lot']) : "") . ((!empty($tender_results_lotes_ebay_expensive[$value['id']]) && !empty($tender_lotes_user[$value['id']]) && $tender_lotes_user[$value['id']] < $tender_results_lotes_ebay_expensive[$value['id']]['expensive_value']) ? ((float)$tender_results_lotes_ebay_expensive[$value['id']]['expensive_value'] - (float)$value['step_lot']) : "") . "</td>";
                             } elseif ($game_tender == TRUE) {
-                                echo "<td>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td>";
+                                echo "<td class = ''>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td>";
                             }
                         } else {
-                            echo "<td>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td>";
+                            echo "<td class = ''>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td>";
                         }
                         if ($tender_detail['type_auction_plus'] == 1) {
                             // Аукцион в плюс
@@ -425,8 +426,8 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                                     }
                                 }
 
-                                echo "<td>" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "</td>";
-                                echo "<td><input type=\"text\" id=\"tender_lot_" . $value['id'] . "\" name=\"tender_lot[" . $value['id'] . "]\" class=\"input_lote middle validate[" . "required," . "custom[number],maxSize[20],min[" . $max_price . "],ajax[ajaxLotCall]]\" value=\"\" /></td></tr>\n";
+                                echo "<td class = ''>" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "</td>";
+                                echo "<td class = ''><input type=\"text\" id=\"tender_lot_" . $value['id'] . "\" name=\"tender_lot[" . $value['id'] . "]\" class=\"input_lote middle validate[" . "required," . "custom[number],maxSize[20],min[" . $max_price . "],ajax[ajaxLotCall]]\" value=\"\" /></td></tr>\n";
                             } else {
                                 if (!empty($tender_results_lotes[$value['id']])) {
                                     $max_price = (float)$tender_results_lotes[$value['id']]['best_value'] + $value['step_lot'];
@@ -441,9 +442,9 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                                     }
                                 }
                                 if ($game_tender == FALSE)
-                                    echo "<td><input type=\"text\" id=\"tender_lot_" . $value['id'] . "\" name=\"tender_lot[" . $value['id'] . "]\" class=\"middle validate[required,custom[number],maxSize[20],min[" . $max_price . "],ajax[ajaxLotCall]]\" value=\"" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "\" /></td></tr>\n";
+                                    echo "<td class = ''><input type=\"text\" id=\"tender_lot_" . $value['id'] . "\" name=\"tender_lot[" . $value['id'] . "]\" class=\"middle validate[required,custom[number],maxSize[20],min[" . $max_price . "],ajax[ajaxLotCall]]\" value=\"" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "\" /></td></tr>\n";
                                 else
-                                    echo "<td>" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "</td></tr>\n";
+                                    echo "<td class = ''>" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "</td></tr>\n";
                             }
                         } else {
 
@@ -465,9 +466,10 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                                         $max_price = (float)$value['start_sum'] - 1;
                                     }
                                 }
-                                echo "<td>" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "</td>";
-                                echo "<td><input type=\"text\" id=\"tender_lot_" . $value['id'] . "\" name=\"tender_lot[" . $value['id'] . "]\" class=\"input_lote middle validate[" . "required," . "custom[number],maxSize[20],max[" . $max_price . "],ajax[ajaxLotCall]]\" value=\"\" /></td></tr>\n";
+                                echo "<td class = ''>" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "</td>";
+                                echo "<td class = ''><input type=\"text\" id=\"tender_lot_" . $value['id'] . "\" name=\"tender_lot[" . $value['id'] . "]\" class=\"input_lote middle validate[" . "required," . "custom[number],maxSize[20],max[" . $max_price . "],ajax[ajaxLotCall]]\" value=\"\" /></td></tr>\n";
                             } else {
+//Выводит только для цеы а где все остальное?
                                 if ($game_tender == FALSE) {
                                     if ($tender_results_lotes == null) {
                                         $max_price = $value['start_sum'] - $value['step_lot'];
@@ -481,7 +483,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                                             $max_price = (float)$value['start_sum'] - 1;
                                         }
                                     }
-                                    echo "<td><input type=\"text\" 
+                                    echo "<td class = ''><input type=\"text\" 
                                             id=\"tender_lot_" . $value['id'] . "\" 
                                             name=\"tender_lot[" . $value['id'] . "]\" 
                                             class=\"middle validate[required,custom[number],maxSize[20],max[" .
@@ -489,7 +491,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                                         . "],ajax[ajaxLotCall]]\" 
                                             value=\"" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "\" /></td></tr>\n";
                                 } else {
-                                    echo "<td>" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "</td></tr>\n";
+                                    echo "<td class = ''>" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "</td></tr>\n";
                                 }
                             }
                         }
@@ -516,15 +518,15 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             else
                 echo "				<td colspan=\"4\" style=\"text-align: right;\"><strong>Итого:</strong></td>\n";
 
-            echo "				<td>" . (float)$total_price . " руб.</td>\n";
+            echo "				<td class = ''>" . (float)$total_price . " руб.</td>\n";
 
             if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3))
-                echo "				<td>&nbsp;</td>\n";
+                echo "				<td class = ''>&nbsp;</td>\n";
             else {
                 if ($tender_lotes_user && $game_tender == FALSE)
                     echo "				<td colspan=\"2\">&nbsp;</td>\n";
                 else
-                    echo "				<td>&nbsp;</td>\n";
+                    echo "				<td class = ''>&nbsp;</td>\n";
             }
             echo "			</tr>\n";
             ?>
@@ -568,11 +570,11 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             $i = 1;
             if (!empty($tender_members)) {
                 foreach ($tender_members as $key => $value) {
-                    echo "<tr" . (!empty($tender_detail['winner']) && $tender_detail['winner'] == $value['user_id'] ? " class=\"winner\"" : "") . "><td style=\"text-align: center;\">" . $i . "</td><td>" . $value['res_name'] . "</td><td>" . $value['inn'];
+                    echo "<tr" . (!empty($tender_detail['winner']) && $tender_detail['winner'] == $value['user_id'] ? " class=\"winner\"" : "") . "><td style=\"text-align: center;\">" . $i . "</td><td class = ''>" . $value['res_name'] . "</td><td class = ''>" . $value['inn'];
 
-                    echo ($group_id == 2 || $group_id == 3)?"<td>".$value['email']."</td>":"";
-                    echo ($group_id == 2 || $group_id == 3)?"<td>".$value['phone']."</td>":"";
-                    echo ($group_id == 2 || $group_id == 3)?"<td>".$value['director_name']."</td>":"";
+                    echo ($group_id == 2 || $group_id == 3)?"<td class = ''>".$value['email']."</td>":"";
+                    echo ($group_id == 2 || $group_id == 3)?"<td class = ''>".$value['phone']."</td>":"";
+                    echo ($group_id == 2 || $group_id == 3)?"<td class = ''>".$value['director_name']."</td>":"";
 
                     echo "</td><td style=\"text-align: center;\">" . (!empty($value['total_sum']) ? $value['total_sum'] : "0.00") . "</td>" . ((($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) ? "<td style=\"text-align: center;\"><input type=\"radio\" name=\"victory_member\" value=\"" . $value['user_id'] . "\" " . (!empty($value['leader']) && $value['leader'] == 1 ? "checked=\"checked\"" : "") . " /></td>" : "") . "</tr>\n";
                     $i++;
@@ -585,11 +587,11 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 foreach ($visited_users as $user) {;
                     echo "<tr>
 <td style=\"text-align: center;\">" . $i . "</td>
-<td>" . $user->name . "</td>
-<td>" . $user->inn . "</td>
-<td>" . $user->email . "</td>
-<td>" . $user->phone . "</td>
-<td>" . $user->director_name . "</td>
+<td class = ''>" . $user->name . "</td>
+<td class = ''>" . $user->inn . "</td>
+<td class = ''>" . $user->email . "</td>
+<td class = ''>" . $user->phone . "</td>
+<td class = ''>" . $user->director_name . "</td>
 <td colspan='2'>Посещал, но не делал ставок</td>
 </tr>";
                     $i++;
