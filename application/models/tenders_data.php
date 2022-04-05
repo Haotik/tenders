@@ -864,7 +864,7 @@ class Tenders_data extends CI_Model
 
     function get_all_users($order = 'name')
     {
-        $sql = "SELECT up.`user_id`, up.`name` FROM `user_profiles` up LEFT JOIN users u ON u.id = up.user_id 
+        $sql = "SELECT up.`user_id`, up.`name`, up.`group_id` FROM `user_profiles` up LEFT JOIN users u ON u.id = up.user_id 
         WHERE u.activated = 1 AND u.banned = 0 
         ORDER BY up.`" . $order . "` ASC";
 

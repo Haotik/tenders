@@ -1261,6 +1261,7 @@ class Tenders extends CI_Controller
         if ($this->tank_auth->is_logged_in() && $this->tank_auth->get_group_id() != 1) {
             $tender_id = (int)$this->input->post('tender_id');
             $auto_end = (int)$this->input->post('auto_end');
+            $reason = $this->input->post('reason');
             $data['no_tender'] = FALSE;
 
             if ($tender_id < 0)
@@ -1275,8 +1276,11 @@ class Tenders extends CI_Controller
                 if ($tender) {
                     if (strtotime($tender['end_date']) < time() && $auto_end == 1)
                         $this->tenders->set_tenders_end($tender_id);
-                    elseif ($auto_end == 0)
+                    elseif ($auto_end == 0){
+                        $data_tender['change_reason'] = $reason;
+                        $this->tenders->update_tender($data_tender, $tender_id);
                         $this->tenders->set_tenders_end($tender_id, $user_id);
+                    }
                 } else
                     $data['no_tender'] = TRUE;
             }
@@ -1296,6 +1300,7 @@ class Tenders extends CI_Controller
     {
         if ($this->tank_auth->is_logged_in() && $this->tank_auth->get_group_id() != 1) {
             $tender_id = (int)$this->input->post('tender_id');
+            $reason = $this->input->post('reason');
             $data['no_tender'] = FALSE;
 
             if ($tender_id < 0)
@@ -1308,6 +1313,8 @@ class Tenders extends CI_Controller
 
                 $tender = $this->tenders->get_tenders_by_id((int)$tender_id, (int)$user_id);
                 if ($tender) {
+                    $data_tender['change_reason'] = $reason;
+                    $this->tenders->update_tender($data_tender, $tender_id);
                     $this->tenders->set_tenders_reset($tender_id);
                 } else
                     $data['no_tender'] = TRUE;
@@ -1317,6 +1324,46 @@ class Tenders extends CI_Controller
                 echo "error|Произошла ошибка при аннулировании торгов";
             else
                 echo "success|Торги успешно аннулированы";
+        } else
+            redirect('');
+
+        return TRUE;
+    }
+
+    function prolongation()
+    {
+        if ($this->tank_auth->is_logged_in() && $this->tank_auth->get_group_id() != 1) {
+            $tender_id = (int)$this->input->post('tender_id');
+            $new_date = $this->input->post('new_date');
+            $reason = $this->input->post('reason');
+            $date = date("Y-m-d H:i:s", strtotime($new_date));
+            $data['no_tender'] = FALSE;
+
+            if ($tender_id < 0)
+                $data['no_tender'] = TRUE;
+            else {
+                if ($this->tank_auth->get_group_id() == 2 OR $this->tank_auth->get_group_id() == 5)
+                    $user_id = $this->tank_auth->get_user_id();
+                else
+                    $user_id = 0;
+                $tender = $this->tenders->get_tenders_by_id((int)$tender_id, (int)$user_id);
+
+                if ($tender) {
+                   try{
+                       $data_tender['end_date'] = $date;
+                       $data_tender['change_reason'] = $reason;
+                       $this->tenders->update_tender($data_tender, $tender_id);
+                   } catch (Exception $e) {
+                        var_dump($e);
+                   }
+                } else
+                  $data['no_tender'] = TRUE;
+            }
+
+            if ($data['no_tender'] == TRUE)
+                echo "error|Произошла ошибка при изменении даты торгов";
+            else
+                echo "success|Торги успешно продлены";
         } else
             redirect('');
 
