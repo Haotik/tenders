@@ -326,7 +326,13 @@ if ($no_tender == TRUE) {
         <?php
         if (!empty($tender_lotes)) {
             foreach ($tender_lotes as $key => $value) {
-                echo "<tr id=\"lots_" . $value['id'] . "\"><td>" . $value['name'] . "</td><td>" . $value['unit'] . "</td><td>" . $value['need'] . "</td><td>" . $value['start_sum'] . "</td><td class=\"col_rate_step\">" . $value['step_lot'] . "</td><td><a href=\"\" class=\"button-delete\" title=\"Удалить\" onclick=\"noty({ animateOpen: {opacity: 'show'}, animateClose: {opacity: 'hide'}, layout: 'center', text: 'Вы уверены, что хотите удалить лот из аукциона?', buttons: [ {type: 'btn btn-mini btn-primary', text: 'Удалить', click: function(\$noty) { \$noty.close(); $.DeleteLot(" . $value['id'] . "); } }, {type: 'btn btn-mini btn-danger', text: 'Отмена', click: function(\$noty) { \$noty.close(); } } ], closable: false, timeout: false }); return false;\"></a></td></tr>\n";
+                echo "<tr id=\"lots_" . $value['id'] . "\"><td>" 
+                . $value['name'] . "</td><td>" 
+                . $value['unit'] . "</td><td>" 
+                . $value['need'] . '</td><td class="col_start_sum">' 
+                . $value['start_sum'] . '</td><td  class="col_product_link"><a href="' . $value['product_link'] . '" target="_blank">' 
+                . "Ссылка" . "</a></td><td class=\"col_rate_step\">" 
+                . $value['step_lot'] . "</td><td><a href=\"\" class=\"button-delete\" title=\"Удалить\" onclick=\"noty({ animateOpen: {opacity: 'show'}, animateClose: {opacity: 'hide'}, layout: 'center', text: 'Вы уверены, что хотите удалить лот из аукциона?', buttons: [ {type: 'btn btn-mini btn-primary', text: 'Удалить', click: function(\$noty) { \$noty.close(); $.DeleteLot(" . $value['id'] . "); } }, {type: 'btn btn-mini btn-danger', text: 'Отмена', click: function(\$noty) { \$noty.close(); } } ], closable: false, timeout: false }); return false;\"></a></td></tr>\n";
             }
         }
         ?>

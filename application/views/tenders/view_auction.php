@@ -221,7 +221,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                             <td class = ''><?php echo $value['start_sum']; ?></td>
                         <?php endif; ?>
                         <?php if ($tender_detail['type_auction'] == 3): ?>
-                            <td class = ''><?php echo $value['product_link']; ?></td>
+                            <td class = ''><a href="<?php echo $value['product_link']; ?>" target="_blank">Ссылка</a></td>
                         <?php endif; ?>
                         <?php if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2): ?>
                             <td class = ''><?php echo $value['step_lot']; ?></td>
@@ -372,13 +372,14 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 // Показываем результаты для администраторов и администраторов торгов (авторов)
                 if (!empty($tender_lotes))
                     foreach ($tender_lotes as $key => $value) {
-                        echo "<tr id=\"lots_" . $value['id'] . "\"><td class = ''>" 
-                        . $value['name'] . "</td><td class = ''>" 
-                        . $value['unit'] . "</td><td class = ''>" 
-                        . $value['need'] . "</td><td class = ''>" 
-                        . ($tender_detail['type_auction'] == 3 ? $value['product_link'] : $value['start_sum']) . "</td>" 
-                        . ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2 ? "<td class = ''>" . $value['step_lot'] . "</td>" : "") . "<td class = ''>" 
-                        . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td><td class = ''>"
+
+                        echo "<tr id=\"lots_" . $value['id'] . "\"><td>" 
+                        . $value['name'] . "</td><td>" 
+                        . $value['unit'] . "</td><td>" 
+                        . $value['need'] . "</td><td>" 
+                        . ($tender_detail['type_auction'] == 3 ? '<a href="' . $value['product_link'] . '" target="_blank">Ссылка</a>' : $value['start_sum']) . "</td>" 
+                        . ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2 ? "<td>" . $value['step_lot'] . "</td>" : "") . "<td>" 
+                        . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td><td>" 
                         . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['name'] : "нет") . "</td></tr>\n";
                     } // foreach ($tender_results_lotes as $key => $value) {
             } // if ( !empty($tender_results_lotes) && ($group_id == 2 || $group_id == 3) )
@@ -388,11 +389,12 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 if (!empty($tender_lotes)) {
                     print_r2(@$tender_lotes[0]['name']);
                     foreach ($tender_lotes as $key => $value) {
-                        echo "<tr id=\"lots_" . $value['id'] . "\"><td class = ''>" 
-                        . $value['name'] . "</td><td class = ''>" 
-                        . $value['unit'] . "</td><td class = ''>" 
-                        . $value['need'] . "</td><td class = ''>" 
-                        . ($tender_detail['type_auction'] == 3 ? $value['product_link'] : $value['start_sum']) . "</td>";
+
+                        echo "<tr id=\"lots_" . $value['id'] . "\"><td>" 
+                        . $value['name'] . "</td><td>" 
+                        . $value['unit'] . "</td><td>" 
+                        . $value['need'] . "</td><td>" 
+                        . ($tender_detail['type_auction'] == 3 ? '<a href="' . $value['product_link'] . '" target="_blank">Ссылка</a>' : $value['start_sum']) . "</td>";
 
                         if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
                             echo "<td class = ''>" . $value['step_lot'] . "</td>";
