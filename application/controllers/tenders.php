@@ -392,6 +392,9 @@ class Tenders extends CI_Controller
                         $arrayToJs[1] = false;
                     }
 
+                } elseif($tender['type_auction'] == 3){
+                    $arrayToJs[0] = 'tender_lot_' . $lot_id;
+                    $arrayToJs[1] = true;
                 } else {
                     $tender_results_lotes = $this->tenders->get_tender_results_lotes_best_min((int)$lot['tender_id']);
 
@@ -566,8 +569,12 @@ class Tenders extends CI_Controller
                                 // 3 усл. - "механизм «eBay»"
 
 
-                                if (($tender['type_rate'] == 1 && $tender['type_auction'] == 1 && $lot['start_sum'] > floatval($value) || (floatval($value) == $lot['start_sum']) && $tender_results_lotes == null) ||
-                                    ($tender['type_rate'] == 2 && $tender['type_auction'] == 1 && ($max_price >= floatval($value))) ||
+                                if (($tender['type_rate'] == 1 && $tender['type_auction'] == 1 && $lot['start_sum'] > floatval($value) 
+                                    || 
+                                    (floatval($value) == $lot['start_sum']) && $tender_results_lotes == null) 
+                                    ||
+                                    ($tender['type_rate'] == 2 && $tender['type_auction'] == 1 && ($max_price >= floatval($value))) 
+                                    ||
                                     ($tender['type_auction'] == 2 && $max_price >= floatval($value))
                                 ) {
                                     $checkBestValue = $this->tenders->get_tender_results_lotes_best_min($tender_id);
@@ -610,8 +617,24 @@ class Tenders extends CI_Controller
                     $data['no_tender'] = TRUE;
             }
 
-            if ($data['no_tender'] == TRUE || $data['game_tender'] == TRUE)
-                echo "error|Ваши ставки не приняты";
+            if ($tender['type_auction'] == 3) {
+                    // Записываем лоты
+                    $this->tenders->set_tenders_lotes(array($key => floatval($value)), (int)$tender_id, (int)$user_id);
+
+                    // Считаем результаты
+                    $this->tenders->set_tenders_results((int)$tender_id, (int)$user_id);
+
+                    // Определяем победителя
+                    $this->tenders->set_tenders_leader((int)$tender_id);
+
+                    // Отправка письма подписчикам
+                    $this->_send_email('updatetender', 'Изменения в аукционе', array('tender_id' => $tender_id));
+                    $data['no_tender'] = FALSE;
+                }
+
+            if ($data['no_tender'] == TRUE || $data['game_tender'] == TRUE){
+                echo "error|Ваши ставки не приняты".json_encode($data);
+            }
             else
                 echo "success|Ваши ставки приняты";
         }
@@ -748,7 +771,11 @@ class Tenders extends CI_Controller
                         }
 
                         // Записываем лоты
-                        $this->tenders->set_tenders_lotes($this->input->get('tender_lot'), (int)$tender_id, (int)$user_id);
+                        $lot_data = [
+                            "value"=>$this->input->get('tender_lot'),
+                            "seller_name" => $this->input->get('product_name')
+                        ];
+                        $this->tenders->set_tenders_lotes($lot_data, (int)$tender_id, (int)$user_id);
 
                         // Считаем результаты
                         $this->tenders->set_tenders_results((int)$tender_id, (int)$user_id);

@@ -421,6 +421,7 @@ class Tenders_data extends CI_Model
                 $data_arr[$i]['created'] = date("Y-m-d H:i:s");
                 $data_arr[$i]['tender_id'] = $tender_id;
                 $data_arr[$i]['value'] = $v;
+                //$data_arr[$i]['seller_name'] = $v["seller_name"];
                 $i++;
             }
         }

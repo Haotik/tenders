@@ -18,9 +18,10 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         'class' => 'validate[required]',
         'style' => 'width: 50px;'
     );
+
+    var_dump($tender_detail);
     ?>
     <h4><?php echo $page_title; ?></h4>
-<?print_r2($tender_detail);?>
     <table class="reg">
         <tr>
             <td colspan="2">
@@ -162,7 +163,8 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             <?php echo form_button('prolongation', 'Продлить торги', "class=\"button\" onclick=\"$.show_popup_date()\""); ?>
         <?php else : ?>
             &nbsp;<?php echo form_button('generate_xls', 'Сгенерировать итоговую таблицу', "class=\"button\" onclick=\"$.GeterateXLS(" . $tender_id . ", " . $user_id . "); return false;\""); ?>
-
+            &nbsp;
+            <?php echo form_button('cancellation', 'Аннулировать торги', "class=\"button\" onclick=\"$.show_popup_cancel()\""); ?>
             <?php echo form_button('upload_protocol', 'Прикрепить протокол', "class=\"button\" id=\"protocol_btn\""); ?>
             <form id="upload_form" action="" method="post" enctype="multipart/form-data" style="display: none">
                 <input type="file" name="protocol_file" id="protocol_file"/>
@@ -196,17 +198,17 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         <table class="reg tablesorter" id="lots_show">
             <thead>
             <tr>
-                <th>Наименование</th>
-                <th>Ед. изм.</th>
-                <th>Потребность</th>
+                <th class="name">Наименование</th>
+                <th class="unit">Ед. изм.</th>
+                <th class="need">Потребность</th>
                 <?php if ($tender_detail['type_auction'] != 3): ?>
-                    <th>Начальная цена, руб.</th>
+                    <th class="start_sum">Начальная цена, руб.</th>
                 <?php endif; ?>
                 <?php if ($tender_detail['type_auction'] == 3): ?>
-                    <th>Ссылка на товар</th>
+                    <th class="product_link">Ссылка на товар</th>
                 <?php endif; ?>
                 <?php if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2): ?>
-                    <th>Шаг ставки, руб.</th>
+                    <th class="step_lot">Шаг ставки, руб.</th>
                 <?php endif; ?>
             </tr>
             </thead>
@@ -214,17 +216,17 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             <?php if (!empty($tender_lotes)): ?>
                 <?php foreach ($tender_lotes as $key => $value) : ?>
                     <tr id="lots_<?php echo $value['id']; ?>">
-                        <td class = ''><?php echo $value['name']; ?></td>
-                        <td class = ''><?php echo $value['unit']; ?></td>
-                        <td class = ''><?php echo $value['need']; ?></td>
+                        <td class = 'name'><?php echo $value['name']; ?></td>
+                        <td class = 'unit'><?php echo $value['unit']; ?></td>
+                        <td class = 'need'><?php echo $value['need']; ?></td>
                         <?php if ($tender_detail['type_auction'] != 3): ?>
-                            <td class = ''><?php echo $value['start_sum']; ?></td>
+                            <td class = 'start_sum'><?php echo $value['start_sum']; ?></td>
                         <?php endif; ?>
                         <?php if ($tender_detail['type_auction'] == 3): ?>
-                            <td class = ''><a href="<?php echo $value['product_link']; ?>" target="_blank">Ссылка</a></td>
+                            <td class = 'product_link'><a href="<?php echo $value['product_link']; ?>" target="_blank">Ссылка</a></td>
                         <?php endif; ?>
                         <?php if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2): ?>
-                            <td class = ''><?php echo $value['step_lot']; ?></td>
+                            <td class = 'step_lot'><?php echo $value['step_lot']; ?></td>
                         <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
@@ -238,7 +240,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             echo form_open("/tenders/save_terms/", array('id' => 'termtender-form'), array('term_tender_id' => $tender_id));
         }
         ?>
-        <?if (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE)) {
+        <?if (($group_id == 2 && $tender_author == TRUE AND $tender_detail["status"] != 2) || ($group_id == 5 && $tender_author == TRUE AND $tender_detail["status"] != 2)) {
             goto skipForAutor;
         }?>
         <h4>Дополнительные условия к аукциону</h4>
@@ -331,36 +333,42 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             Лоты
             аукциона <?php echo((($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) ? " (<a href=\"/tenders/show_history/" . $tender_id . "\" target=\"_blank\">история ставок</a>)" : ""); ?>
         </h4>
+        <button class="btn btn-primary lots-file-import fileinput-button">
+            <i class="icon-upload icon-white"></i>
+            <span>Загрузить и заполнить</span>
+            <input type="file" name="lots_file" accept=".xls,.xlsx">
+        </button>
         <table class="reg tablesorter" id="lots_show">
             <thead>
             <tr>
                 <th class="name">Наименование</th>
                 <th class="unit">Ед. изм.</th>
-                <th class="">Потребность</th>
+                <th class="need">Потребность</th>
                 <?php if ($tender_detail['type_auction'] != 3): ?>
-                    <th class="">Начальная цена, руб.</th>
+                    <th class="start_sum">Начальная цена, руб.</th>
                 <?php endif; ?>
                 <?php if ($tender_detail['type_auction'] == 3): ?>
-                    <th class="">Ссылка на товар</th>
+                    <th class="product_link">Ссылка на товар</th>
+                    <th class="product_name">Название у поставщика</th>
                 <?php endif; ?>
                 <?php
                 if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
-                    echo "				<th>Шаг ставки, руб.</th>\n";
+                    echo "				<th class='step_lot'>Шаг ставки, руб.</th>\n";
 
                 if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3)) {
                     // Колонки для администраторов и администраторов торгов (авторов)
-                    echo "				<th>Лучшая цена, руб.</th>\n";
-                    echo "				<th>Предлагает</th>\n";
+                    echo "				<th class='best_value'>Лучшая цена, руб.</th>\n";
+                    echo "				<th class='best_autor'>Предлагает</th>\n";
                 } else {
                     // Колонки для участников
                     //	if ($tender_detail['type_auction'] == 2)
-                    echo "				<th>Лучшая цена, руб.</th>\n";
+                    echo "				<th class='best_value'>Лучшая цена, руб.</th>\n";
 
                     if ($tender_lotes_user && $game_tender == FALSE) {
-                        echo "				<th>Ваша текущая цена, руб.</th>\n";
-                        echo "				<th>Ваша новая цена, руб.</th>\n";
+                        echo "				<th class='current_value'>Ваша текущая цена, руб.</th>\n";
+                        echo "				<th class='new_curent_value'>Ваша новая цена, руб.</th>\n";
                     } else {
-                        echo "				<th>Ваша цена, руб.</th>\n";
+                        echo "				<th class='you_value'>Ваша цена, руб.</th>\n";
                     }
                 }
                 ?>
@@ -387,7 +395,6 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 //          var_dump($tender_results_lotes);
                 // Заполняем лоты аукциона (для участников)
                 if (!empty($tender_lotes)) {
-                    print_r2(@$tender_lotes[0]['name']);
                     foreach ($tender_lotes as $key => $value) {
 
                         echo "<tr id=\"lots_" . $value['id'] . "\"><td>" 
@@ -395,21 +402,22 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                         . $value['unit'] . "</td><td>" 
                         . $value['need'] . "</td><td>" 
                         . ($tender_detail['type_auction'] == 3 ? '<a href="' . $value['product_link'] . '" target="_blank">Ссылка</a>' : $value['start_sum']) . "</td>";
+                        echo '<td><input type="text" name="product_name" value=""></td>';
 
                         if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
-                            echo "<td class = ''>" . $value['step_lot'] . "</td>";
+                            echo "<td class = 'step_lot'>" . $value['step_lot'] . "</td>";
 
                         // Отображение лучшей цены по схеме Ebay
                         if ($tender_detail['type_auction'] == 2) {
                             if ((empty($tender_members) || count($tender_members) == 1) && $game_tender == FALSE)
-                                echo "<td class = ''>" . $value['start_sum'] . "</td>";
+                                echo "<td class = 'start_sum'>" . $value['start_sum'] . "</td>";
                             elseif ($game_tender == FALSE) {
-                                echo "<td class = ''>" . ((!empty($tender_results_lotes_ebay[$value['id']]) && !empty($tender_lotes_user[$value['id']]) && $tender_lotes_user[$value['id']] > $tender_results_lotes_ebay[$value['id']]['best_value']) ? ((float)$tender_lotes_user[$value['id']] - (float)$value['step_lot']) : "") . ((!empty($tender_results_lotes_ebay_expensive[$value['id']]) && !empty($tender_lotes_user[$value['id']]) && $tender_lotes_user[$value['id']] < $tender_results_lotes_ebay_expensive[$value['id']]['expensive_value']) ? ((float)$tender_results_lotes_ebay_expensive[$value['id']]['expensive_value'] - (float)$value['step_lot']) : "") . "</td>";
+                                echo "<td class = 'wtf'>" . ((!empty($tender_results_lotes_ebay[$value['id']]) && !empty($tender_lotes_user[$value['id']]) && $tender_lotes_user[$value['id']] > $tender_results_lotes_ebay[$value['id']]['best_value']) ? ((float)$tender_lotes_user[$value['id']] - (float)$value['step_lot']) : "") . ((!empty($tender_results_lotes_ebay_expensive[$value['id']]) && !empty($tender_lotes_user[$value['id']]) && $tender_lotes_user[$value['id']] < $tender_results_lotes_ebay_expensive[$value['id']]['expensive_value']) ? ((float)$tender_results_lotes_ebay_expensive[$value['id']]['expensive_value'] - (float)$value['step_lot']) : "") . "</td>";
                             } elseif ($game_tender == TRUE) {
-                                echo "<td class = ''>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td>";
+                                echo "<td class = 'best_value'>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td>";
                             }
                         } else {
-                            echo "<td class = ''>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td>";
+                            echo "<td class = 'best_value'>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td>";
                         }
                         if ($tender_detail['type_auction_plus'] == 1) {
                             // Аукцион в плюс
@@ -469,9 +477,18 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                                     }
                                 }
                                 echo "<td class = ''>" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "</td>";
+                               if ($tender_detail["type_auction"] == 3) {
+                                        echo "<td class = ''><input type=\"text\" 
+                                            id=\"tender_lot_" . $value['id'] . "\" 
+                                            name=\"tender_lot[" . $value['id'] . "]\" 
+                                            class=\"middle validate[required]\" value=\"" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "\" /></td></tr>\n";
+                                } else {
+
                                 echo "<td class = ''><input type=\"text\" id=\"tender_lot_" . $value['id'] . "\" name=\"tender_lot[" . $value['id'] . "]\" class=\"input_lote middle validate[" . "required," . "custom[number],maxSize[20],max[" . $max_price . "],ajax[ajaxLotCall]]\" value=\"\" /></td></tr>\n";
+                                }
+                            
                             } else {
-//Выводит только для цеы а где все остальное?
+//Выводит только для цены а где все остальное?
                                 if ($game_tender == FALSE) {
                                     if ($tender_results_lotes == null) {
                                         $max_price = $value['start_sum'] - $value['step_lot'];
@@ -485,13 +502,22 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                                             $max_price = (float)$value['start_sum'] - 1;
                                         }
                                     }
-                                    echo "<td class = ''><input type=\"text\" 
+
+                                    if ($tender_detail["type_auction"] == 3) {
+                                        echo "<td class = ''><input type=\"text\" 
+                                            id=\"tender_lot_" . $value['id'] . "\" 
+                                            name=\"tender_lot[" . $value['id'] . "]\" 
+                                            class=\"middle validate[required]\" value=\"" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "\" /></td></tr>\n";
+                                    } else {
+                                        echo "<td class = ''><input type=\"text\" 
                                             id=\"tender_lot_" . $value['id'] . "\" 
                                             name=\"tender_lot[" . $value['id'] . "]\" 
                                             class=\"middle validate[required,custom[number],maxSize[20],max[" .
                                         $max_price
                                         . "],ajax[ajaxLotCall]]\" 
                                             value=\"" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "\" /></td></tr>\n";
+                                    }
+                                    
                                 } else {
                                     echo "<td class = ''>" . (!empty($tender_lotes_user[$value['id']]) ? $tender_lotes_user[$value['id']] : "") . "</td></tr>\n";
                                 }
@@ -544,7 +570,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
     ?>
 
     <?php
-    if ($tender_detail['users_visible'] == 1 || ($group_id == 2 && $tender_author == TRUE) || $group_id == 3 || ($game_tender == TRUE && !empty($tender_detail['winner']))) {
+    if ($tender_detail['users_visible'] == 1 || ($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3 || ($game_tender == TRUE && !empty($tender_detail['winner']))) {
         if (!empty($tender_members) && ($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) {
             echo form_open("/tenders/winner/", array('id' => 'wintender-form'), array('tender_id' => $tender_id));
         }
@@ -611,7 +637,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             echo form_close();
         }
         ?>
-        <?if (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE)) {
+        <?if (($group_id == 2 && $tender_author == TRUE  AND $tender_detail["status"] != 2) || ($group_id == 5 && $tender_author == TRUE AND $tender_detail["status"] != 2)) {
             skipForAutor:
         }?>
         <?php
@@ -797,7 +823,17 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             $("#cancel_reason").css('display', 'none');
         }
     });
-
-    
-    
 </script>
+
+
+<?
+// Аукцион ИТ скрывать столбцы для участников если аукцион не завершен
+if ($tender_detail["type_auction"] == 3 AND 
+    ($group_id == 5 OR $group_id ==6)
+    AND $tender_detail["status"] != 2) {?>
+<style>
+    .best_value,.start_price{
+        display: none;
+    }
+</style>
+<?}?>
