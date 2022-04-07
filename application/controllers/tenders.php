@@ -1005,7 +1005,10 @@ class Tenders extends CI_Controller
                     'status' => (!empty($status) ? $status : 0),
                 );
 
+                $is_edit = FALSE;
+
                 if ($is_edit == FALSE) {
+
                     $data_tender['id'] = $tender_id;
 
                     // Переименовываем папку с файлами к тендеру
@@ -1059,6 +1062,7 @@ class Tenders extends CI_Controller
                     $lots = $this->input->post('lots');
                     $arr_lots = array();
                     $l = 0;
+
                     if (!empty($lots)) {
 //                        print_r2($lots);
                         for ($al = 0; $al <= sizeof($lots) - 1; $al++) {
@@ -1260,6 +1264,7 @@ class Tenders extends CI_Controller
         if ($this->tank_auth->is_logged_in() && $this->tank_auth->get_group_id() != 1) {
             $tender_id = (int)$this->input->post('tender_id');
             $user_id = (int)$this->input->post('user_id');
+            $comment = $this->input->post('comment');
             $data['no_user'] = FALSE;
 
             if ($user_id < 0 || $tender_id < 0)
@@ -1267,7 +1272,7 @@ class Tenders extends CI_Controller
             else {
                 $tender = $this->tenders->get_tenders_by_id($tender_id);
                 if ($tender) {
-                    $this->tenders->set_tenders_leader_manual($tender_id, $user_id);
+                    $this->tenders->set_tenders_leader_manual($tender_id, $user_id, $comment);
                 } else
                     $data['no_user'] = TRUE;
             }

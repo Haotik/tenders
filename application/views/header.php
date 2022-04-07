@@ -451,7 +451,7 @@
                 $("#addtender-form").submit(function () {
                     if ($("#addtender-form").validationEngine('validate') == true) {
                         //выключаем кнопку чтобы не создавались дубликаты при долгой рассылке писем
-                        $("#addtender_submit_btn").prop('disabled', true);
+                        //$("#addtender_submit_btn").prop('disabled', true);
                         $("#addtender_submit_btn").val("Обработка");
                         $("#addtender_submit_btn").css( "width", '111');
                         var value = $("#addtender_submit_btn").val();
@@ -518,6 +518,7 @@
                             },
 
                             function (txt) {
+                                console.log(txt);
                                 get = txt.split('|');
                                 if (get[0] == 'success') {
                                     noty({
@@ -616,9 +617,13 @@
                 }
                 if (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) {
                 ?>
-                $.SelectWinner = function (user_id, tender_id) {
-                    $.post('/tenders/winner/', {user_id: user_id, tender_id: tender_id},
+                $.SelectWinner = function (user_id, tender_id){
+                    $('#winner_reason').css('display', 'flex');
+                }
+                $._SelectWinner = function (user_id, tender_id, comment = '') {
+                    $.post('/tenders/winner/', {user_id: user_id, tender_id: tender_id, comment: comment},
                         function (txt) {
+                            console.log(txt);
                             get = txt.split('|');
                             if (get[0] == 'success') {
                                 noty({

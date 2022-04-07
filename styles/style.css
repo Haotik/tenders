@@ -769,7 +769,7 @@ table.tablesorter tbody .is_deleted td {
     margin-top: 15px;
 }
 
-#new_date_picker,#cancel_reason,#early_end_reason{
+#new_date_picker,#cancel_reason,#early_end_reason,#winner_reason{
     display: none;
     align-items: center;
     justify-content: center;

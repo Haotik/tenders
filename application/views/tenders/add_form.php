@@ -207,15 +207,19 @@ if ($no_tender == TRUE) {
         <tr>
             <td class="td_left">Опции торгов<span class="red">*</span>:</td>
             <td>
+            <?
+            if ($group_id == 5) {?>
+                <?php echo form_radio($type_rate_it); ?> <?php echo form_label('Ставка ИТ', 'type_rate_it'); ?>
+                <br/>
+            <?}else{?>
                 <?php echo form_radio($type_auction_open); ?> <?php echo form_label('Открытые торги (стандартный механизм)', 'type_auction_open'); ?>
                 <br/>
                 <?php echo form_radio($type_auction_ebay); ?> <?php echo form_label('Полузакрытые торги (механизм «eBay»)', 'type_auction_ebay'); ?>
                 <br/>
-                <?php echo form_radio($type_rate_it); ?> <?php echo form_label('Ставка ИТ', 'type_rate_it'); ?>
-                <br/>
                 <?php echo form_checkbox($type_auction_scandinavia); ?> <?php echo form_label('Скандинавский аукцион', 'type_auction_scandinavia'); ?>
                 <br/>
                 <?php echo form_checkbox($type_auction_plus); ?> <?php echo form_label('Аукцион в «плюс»', 'type_auction_plus'); ?>
+            <?}?>
             </td>
         </tr>
         <tr id="row_tender_minute_end">

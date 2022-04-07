@@ -729,6 +729,17 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         </div>
     </div>
 </div>
+<div id="winner_reason">
+    <div class="date_picker_container">
+        <div class="erore_place"></div>
+        <h4>Укажите причину:</h4>
+        <textarea name="comment" id="winner_comment" cols="10" rows="3" require="require"></textarea>
+        <div style="display: flex; justify-content: space-between; align-items: center;" placeholder="Причина изменений">
+            <button id="winner_request" value="<?=$tender_id?>" data-user="<?=$user_id?>">Завершить</button>
+            <button id="winner_cancel">Закрыть</button>
+        </div>
+    </div>
+</div>
 
 <script>
      $.show_popup_date = function (){
@@ -738,6 +749,18 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
 
     $('#change_date_cancel').on('click', function(event) {
         $("#new_date_picker").css('display', 'none');
+    });
+
+    $('#winner_request').on('click', function(event) {
+        var $reason = $('#winner_comment').val();
+        var $winner = $('input[name=victory_member]').val();
+        if ($reason.trim() == '') {
+            $('.erore_place').html('Комментарий не может быть пустым');
+        } else {
+            var $tender_id = $(this).val();
+            $._SelectWinner($winner, $tender_id, $reason);
+            $("#winner_reason").css('display', 'none');
+        }
     });
 
     $('#change_date_request').on('click', function(event) {
@@ -810,6 +833,9 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
     }
     $('#cancel_cancel').on('click', function(event) {
         $("#cancel_reason").css('display', 'none');
+    });
+    $('#winner_cancel').on('click', function(event) {
+        $("#winner_reason").css('display', 'none');
     });
 
     $('#cancel_request').on('click', function(event) {

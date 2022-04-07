@@ -724,7 +724,7 @@ class Tenders_data extends CI_Model
                 $query_clear = $this->db->query($sql_clear);
 
                 $this->db->where('id', $row['id']);
-                $this->db->update($this->results_table_name, array('leader' => 1));
+                $this->db->update($this->results_table_name, array('leader' => 1, 'comment' => 'Авто выбор, минимальная цена'));
                 if ($this->db->affected_rows() > 0)
                     return TRUE;
                 else
@@ -735,7 +735,7 @@ class Tenders_data extends CI_Model
         return NULL;
     }
 
-    function set_tenders_leader_manual($tender_id, $user_id)
+    function set_tenders_leader_manual($tender_id, $user_id, $comment = '')
     {
         // Сбрасываем победителя
         $sql_clear = "UPDATE `" . $this->results_table_name . "` SET `leader` = 0 WHERE `tender_id` = " . (int)$tender_id;
@@ -743,11 +743,11 @@ class Tenders_data extends CI_Model
 
         $this->db->where('tender_id', (int)$tender_id);
         $this->db->where('user_id', (int)$user_id);
-        $this->db->update($this->results_table_name, array('leader' => 1));
+        $this->db->update($this->results_table_name, array('leader' => 1, 'comment'=> $comment));
         if ($this->db->affected_rows() > 0) {
             // Записываем ID победителя в тендеры
             $this->db->where('id', (int)$tender_id);
-            $this->db->update($this->table_name, array('winner' => (int)$user_id));
+            $this->db->update($this->table_name, array('winner' => (int)$user_id , 'winner_reason' => $comment));
             return TRUE;
         } else
             return FALSE;
