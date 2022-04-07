@@ -402,7 +402,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                         . $value['unit'] . "</td><td>" 
                         . $value['need'] . "</td><td>" 
                         . ($tender_detail['type_auction'] == 3 ? '<a href="' . $value['product_link'] . '" target="_blank">Ссылка</a>' : $value['start_sum']) . "</td>";
-                        echo '<td><input type="text" name="product_name" value=""></td>';
+                        echo '<td><input type="text" name="product_name" value="'.$value["product_name"].'"></td>';
 
                         if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
                             echo "<td class = 'step_lot'>" . $value['step_lot'] . "</td>";

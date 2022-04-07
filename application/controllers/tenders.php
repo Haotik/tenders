@@ -328,7 +328,7 @@ class Tenders extends CI_Controller
         $this->template->view('tenders/view_auction', $data);
     }
 
-    /*** Запуск аукциона ***/
+    /*** Запуск аукциона ? Процесс работы скорее ***/
     function run()
     {
         // Валидация лотов для AJAX-запроса
@@ -339,7 +339,6 @@ class Tenders extends CI_Controller
             $value = $_GET['fieldValue'];
 
             $lot = $this->tenders->get_lotes_by_id($lot_id);
-
 
             if (!empty($lot)) {
                 $tender = $this->tenders->get_tenders_by_id((int)$lot['tender_id']);
