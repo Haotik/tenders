@@ -1593,6 +1593,33 @@ class Tenders extends CI_Controller
         }
         echo $this->json_encode($result);
     }
+
+    function kp_add(){
+        if( isset( $_POST['my_file_upload'] ) ){  
+            
+            $uploaddir = $_SERVER['DOCUMENT_ROOT'] . "/data/kp_tenders"; // . - текущая папка где находится submit.php
+
+            // cоздадим папку если её нет
+            if( ! is_dir( $uploaddir ) ) mkdir( $uploaddir, 0777 );
+
+            $files      = $_FILES; // полученные файлы
+            $done_files = array();
+            $user_id = $this->tank_auth->get_user_id();
+            $auction_id = $_POST['auction'];
+            // переместим файлы из временной директории в указанную
+            foreach( $files as $file ){
+                $file_name = "Auction_".$auction_id. "_seller_". $user_id . ".pdf";
+
+                if( move_uploaded_file( $file['tmp_name'], "$uploaddir/$file_name" ) ){
+                    $done_files[] = realpath( "$uploaddir/$file_name" );
+                }
+            }
+
+            $data = $done_files ? array('files' => $done_files ) : array('error' => 'Ошибка загрузки файлов.');
+
+            echo $this->json_encode($data);
+        }
+    }
 }
 
 /* End of file tenders.php */

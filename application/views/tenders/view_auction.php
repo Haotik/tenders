@@ -18,8 +18,6 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         'class' => 'validate[required]',
         'style' => 'width: 50px;'
     );
-
-    var_dump($tender_detail);
     ?>
     <h4><?php echo $page_title; ?></h4>
     <table class="reg">
@@ -335,9 +333,15 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         </h4>
         <button class="btn btn-primary lots-file-import fileinput-button">
             <i class="icon-upload icon-white"></i>
-            <span>Загрузить и заполнить</span>
+            <span>Загрузить значения из файлов</span>
             <input type="file" name="lots_file" id="load_lots" accept=".xls,.xlsx">
         </button>
+        <div class="upload_kp_container btn btn-primary lots-file-import fileinput-button">
+            <i class="icon-upload icon-white"></i>
+                <span>Прикрепить КП (.pdf)</span>
+            <input type="file" name="kp_file" id="load_kp" accept=".pdf">
+        </div>
+
         <table class="reg tablesorter" id="lots_show">
             <thead>
             <tr>
@@ -742,160 +746,67 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
 </div>
 
 <script>
-     $.show_popup_date = function (){
-        $("#new_date_picker").css('display', 'flex');
-        $("#new_end_date").datepicker($.datepicker.regional["ru"]);
-    }
 
-    $('#change_date_cancel').on('click', function(event) {
-        $("#new_date_picker").css('display', 'none');
-    });
-
-    $('#winner_request').on('click', function(event) {
-        var $reason = $('#winner_comment').val();
-        var $winner = $('input[name=victory_member]').val();
-        if ($reason.trim() == '') {
-            $('.erore_place').html('Комментарий не может быть пустым');
-        } else {
-            var $tender_id = $(this).val();
-            $._SelectWinner($winner, $tender_id, $reason);
-            $("#winner_reason").css('display', 'none');
-        }
-    });
-
-    $('#change_date_request').on('click', function(event) {
-        var $date = $('#new_end_date').val();
-        var $reason = $('#new_end_date_comment').val();
-        if ($date.trim() == '') {
-            $('.erore_place').html('Дата не может быть пустой');
-        }else if ($reason.trim() == '') {
-            $('.erore_place').html('Комментарий не может быть пустым');
-        } else {
-            var $time = $('#new_end_time').val();
-            var $tender_id = $(this).val();
-            var $new_date = $date + " " + $time + ":00";
-            
-            $.Prolongation($tender_id,$new_date,$reason);
-            $("#new_date_picker").css('display', 'none');
-        }
-    });
-
-    $.Prolongation = function (tender_id,new_date,reason) {
-        $.post('/tenders/prolongation/', {tender_id: tender_id,new_date: new_date,reason:reason},
-            function (txt) {
-                get = txt.split('|');
-                if (get[0] == 'success') {
-                    noty({
-                        animateOpen: {opacity: 'show'},
-                        animateClose: {opacity: 'hide'},
-                        layout: 'center',
-                        text: get[1],
-                        type: 'success'
-                    });
-                   setTimeout('window.location.reload()', 3000);
-                }
-                else {
-                    noty({
-                        animateOpen: {opacity: 'show'},
-                        animateClose: {opacity: 'hide'},
-                        layout: 'center',
-                        text: get[1],
-                        type: 'error'
-                    });
-                }
-            }
-        );
-        return false;
-    }
-
-
-    $.show_popup_end = function (){
-        $("#early_end_reason").css('display', 'flex');
-    }
-    $('#early_end_cancel').on('click', function(event) {
-        $("#early_end_reason").css('display', 'none');
-    });
-
-    $('#early_end_request').on('click', function(event) {
-      
-        var $reason = $('#early_end_comment').val();
-        if ($reason.trim() == '') {
-            $('.erore_place').html('Комментарий не может быть пустым');
-        } else {
-            var $tender_id = $(this).val();
-            $.EarlyEnd($tender_id,$reason);
-            $("#early_end_reason").css('display', 'none');
-        }
-    });
+var kp_files;
+$('#load_kp').on('change', function(){
     
-    $.show_popup_cancel = function (){
-        $("#cancel_reason").css('display', 'flex');
-    }
-    $('#cancel_cancel').on('click', function(event) {
-        $("#cancel_reason").css('display', 'none');
-    });
-    $('#winner_cancel').on('click', function(event) {
-        $("#winner_reason").css('display', 'none');
+    kp_files = this.files;
+
+    event.stopPropagation(); // остановка всех текущих JS событий
+
+    // ничего не делаем если files пустой
+    if( typeof kp_files == 'undefined' ) return;
+
+    // создадим объект данных формы
+    var data = new FormData();
+
+    // заполняем объект данных файлами в подходящем для отправки формате
+    $.each( kp_files, function( key, value ){
+        data.append( key, value );
     });
 
-    $('#cancel_request').on('click', function(event) {
-      
-        var $reason = $('#cancel_comment').val();
-        if ($reason.trim() == '') {
-            $('.erore_place').html('Комментарий не может быть пустым');
-        } else {
-            var $tender_id = $(this).val();
-            $.Cancellation($tender_id,$reason);
-            $("#cancel_reason").css('display', 'none');
+    // добавим переменную для идентификации запроса
+    data.append( 'my_file_upload', 1 );
+    data.append( 'auction', <?=$tender_id;?>);
+
+    // AJAX запрос
+    $.ajax({
+        url         : '/tenders/kp_add/',
+        type        : 'POST', // важно!
+        data        : data,
+        cache       : false,
+        dataType    : 'json',
+        // отключаем обработку передаваемых данных, пусть передаются как есть
+        processData : false,
+        // отключаем установку заголовка типа запроса. Так jQuery скажет серверу что это строковой запрос
+        contentType : false, 
+        // функция успешного ответа сервера
+        success     : function( respond, status, jqXHR ){
+
+            // ОК - файлы загружены
+            if( typeof respond.error === 'undefined' ){
+                // выведем пути загруженных файлов в блок '.ajax-reply'
+                var files_path = respond.files;
+                var html = '';
+                $.each( files_path, function( key, val ){
+                     html += val +'<br>';
+                } )
+
+               $('.upload_kp_container').html( "Файл прикрепен" );
+            }
+            // ошибка
+            else {
+                console.log('ОШИБКА: ' + respond.data );
+            }
+        },
+        // функция ошибки ответа сервера
+        error: function( jqXHR, status, errorThrown ){
+            console.log( 'ОШИБКА AJAX запроса: ' + status, jqXHR );
         }
     });
-$(document).ready(function($) {
-    $('#load_lots').change(function(e) {
-        
-        // Получить загруженный объект файла
-        const { files } = e.target;
-        const fileReader = new FileReader();
-        
-        fileReader.addEventListener('load', event => {
-            try {
-                const { result } = event.target;
-                // Читаем весь объект таблицы Excel в двоичном потоке
-                const workbook = XLSX.read(result, { type: 'binary' });
-                let data = []; // сохранить полученные данные
-                // проходим каждый лист для чтения (здесь по умолчанию читается только первый лист)
-                for (const sheet in workbook.Sheets) {
-                    if (workbook.Sheets.hasOwnProperty(sheet)) {
-                        // Используем метод sheet_to_json для преобразования Excel в данные JSON
-                        data = data.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet], {header: 1}));
-                        // break; // Если берется только первая таблица, раскомментируйте эту строку
-                    }
-                }
-
-                data.map((item, i) => {
-                    const [ new_lot_name, new_lot_unit, new_lot_need, new_lot_product_link, new_lot_product_name, new_lot_price ] = item;
-                    //разобрали строку xcel
-                    //теперь надо найти соответсвие имени - строке 
-                    $('#lots_show').find('tr').each(function(){
-                      var $name = $(this).find('.lot_name').text();
-                      if ($name == new_lot_name){
-                        $(this).find('input[name="product_name"]').val(new_lot_product_name);
-                        $(this).find('.middle').val(new_lot_price);
-                      }
-                    })
-
-                })
-                
-                } catch (err) {
-                    // Соответствующие запросы о неправильном типе ошибки файла могут быть брошены сюда
-                    console.log ('Неверный тип файла');
-                    return;
-                }
-        });
-        fileReader.readAsBinaryString(files[0]);
-    });
-
 });
 </script>
+ <script src="/js/view_auction.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <?
@@ -909,3 +820,5 @@ if ($tender_detail["type_auction"] == 3 AND
     }
 </style>
 <?}?>
+
+<div class="ajax-reply"></div>

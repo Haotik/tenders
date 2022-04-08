@@ -407,6 +407,7 @@
                 }
 
                 $('input[name="lots_file"]').change(function(e) {
+                    console.log(1);
                         // Получить загруженный объект файла
                     const { files } = e.target;
                         // Чтение файла через объект FileReader
@@ -559,6 +560,7 @@
                     if ($("#runtender-form").validationEngine('validate') == true) {
                         $.post('/tenders/run/', $("#runtender-form").serialize(),
                             function (txt) {
+                                console.log(txt);
                                 get = txt.split('|');
                                 if (get[0] == 'success') {
                                     noty({

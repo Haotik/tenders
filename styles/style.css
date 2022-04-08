@@ -780,6 +780,16 @@ table.tablesorter tbody .is_deleted td {
     left: 0;
     top: 0;
 }
+.upload_kp_container{
+    display: inline-flex;
+    align-items: flex-start ;
+    justify-content: center;
+    margin-left: 20px;
+    max-width: 400px;
+}
+.upload_kp_container input{
+    max-width:300px;
+}
 
 .date_picker_container {
     width: 200px;
