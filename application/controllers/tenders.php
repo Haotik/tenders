@@ -324,6 +324,17 @@ class Tenders extends CI_Controller
                 $this->uservisitedtenders->create($params);
             }
         }
+        $result_kp_files = [];
+        $all_kp_files = scandir($_SERVER['DOCUMENT_ROOT'] . "/data/kp_tenders");
+        unset($all_kp_files[0]); // .
+        unset($all_kp_files[1]); // ..
+        foreach ($all_kp_files as $kp_file){
+            $file_data = explode('_',$kp_file);
+            $result_kp_files[$file_data[1]]["user"] = $file_data[3];
+            $result_kp_files[$file_data[1]]["file"] = $kp_file;
+        }
+
+        $data["kp_files"][0] = $result_kp_files[$tender_id];
 
         $this->template->view('tenders/view_auction', $data);
     }
@@ -1027,15 +1038,15 @@ class Tenders extends CI_Controller
                     $arr_options = array();
 
                     if (!empty($options)) {
-//                        //old logic
-//                        for ($ao = 0; $ao <= sizeof($options) - 1; $ao++) {
-//                            if ($ao % 2 == 0 && !empty($options[$ao]))
-//                                $arr_options[$k]['name_field'] = $options[$ao];
-//                            if ($ao % 2 == 1 && !empty($options[$ao])) {
-//                                $arr_options[$k]['type_field'] = $options[$ao];
-//                                $k++;
-//                            }
-//                        }
+        //             //old logic
+        //             for ($ao = 0; $ao <= sizeof($options) - 1; $ao++) {
+        //                 if ($ao % 2 == 0 && !empty($options[$ao]))
+        //                     $arr_options[$k]['name_field'] = $options[$ao];
+        //                 if ($ao % 2 == 1 && !empty($options[$ao])) {
+        //                     $arr_options[$k]['type_field'] = $options[$ao];
+        //                     $k++;
+        //                 }
+        //             }
                         $k = 0;
                         for ($i = 0; $i <= count($options) - 1; $i = $i + 3) {
                             $arr_options[$k]['name_field'] = $options[$i];
@@ -1063,7 +1074,7 @@ class Tenders extends CI_Controller
                     $l = 0;
 
                     if (!empty($lots)) {
-//                        print_r2($lots);
+        //             print_r2($lots);
                         for ($al = 0; $al <= sizeof($lots) - 1; $al++) {
                             if ($type_auction == 3) {
                                 if ($al % 6 == 0)
@@ -1112,7 +1123,7 @@ class Tenders extends CI_Controller
                                 }
                             }
                         }
-//                        print_r2($arr_lots);
+        //             print_r2($arr_lots);
                         $this->tenders->add_lotes($arr_lots, $tender_id, $is_edit);
                     }
 
@@ -1558,7 +1569,7 @@ class Tenders extends CI_Controller
                     $row++;
                 }
 
-//                $writer = new PHPExcel_Writer_Excel5($xl);
+        //     $writer = new PHPExcel_Writer_Excel5($xl);
 
                 $writer = PHPExcel_IOFactory::createWriter($xl, 'Excel2007');
                 ob_end_clean();

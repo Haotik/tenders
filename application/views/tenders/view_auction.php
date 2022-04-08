@@ -393,7 +393,9 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                         . ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2 ? "<td>" . $value['step_lot'] . "</td>" : "") . "<td>" 
                         . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td><td>" 
                         . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['name'] : "нет") . "</td></tr>\n";
-                    } // foreach ($tender_results_lotes as $key => $value) {
+                    }
+
+                     // foreach ($tender_results_lotes as $key => $value) {
             } // if ( !empty($tender_results_lotes) && ($group_id == 2 || $group_id == 3) )
             else {
                 //          var_dump($tender_results_lotes);
@@ -564,6 +566,12 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             ?>
             </tbody>
         </table>
+        <?foreach ($kp_files as $kp_file){
+            $kp_path = "http://tenders/data/kp_tenders/" . $kp_file["file"];
+         ?>
+            <a href="<?=$kp_path?>" target='_blank'>Коммерческое предложение участника: <?=$kp_file["user"]?></a>
+        <?}?>
+
         <?php
         if ((($group_id == 2 && $tender_author == FALSE) || $group_id == 1 || $group_id == 6) && $game_tender == FALSE) {
             echo "	<p style=\"margin: 0; padding: 0; text-align: right\">" . form_reset('cancel', 'Отмена', 'class="button"') . "&nbsp;" . form_submit('run', 'Сделать ставку', 'class="button"') . "</p>";
@@ -746,7 +754,6 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
 </div>
 
 <script>
-
 var kp_files;
 $('#load_kp').on('change', function(){
     
