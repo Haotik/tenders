@@ -336,7 +336,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         <button class="btn btn-primary lots-file-import fileinput-button">
             <i class="icon-upload icon-white"></i>
             <span>Загрузить и заполнить</span>
-            <input type="file" name="lots_file" accept=".xls,.xlsx">
+            <input type="file" name="lots_file" id="load_lots" accept=".xls,.xlsx">
         </button>
         <table class="reg tablesorter" id="lots_show">
             <thead>
@@ -381,7 +381,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 if (!empty($tender_lotes))
                     foreach ($tender_lotes as $key => $value) {
 
-                        echo "<tr id=\"lots_" . $value['id'] . "\"><td>" 
+                        echo "<tr id=\"lots_" . $value['id'] . "\"><td class='lot_name'>" 
                         . $value['name'] . "</td><td>" 
                         . $value['unit'] . "</td><td>" 
                         . $value['need'] . "</td><td>" 
@@ -397,7 +397,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 if (!empty($tender_lotes)) {
                     foreach ($tender_lotes as $key => $value) {
 
-                        echo "<tr id=\"lots_" . $value['id'] . "\"><td>" 
+                        echo "<tr id=\"lots_" . $value['id'] . "\"><td class='lot_name'>" 
                         . $value['name'] . "</td><td>" 
                         . $value['unit'] . "</td><td>" 
                         . $value['need'] . "</td><td>" 
@@ -849,8 +849,54 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             $("#cancel_reason").css('display', 'none');
         }
     });
-</script>
+$(document).ready(function($) {
+    $('#load_lots').change(function(e) {
+        
+        // Получить загруженный объект файла
+        const { files } = e.target;
+        const fileReader = new FileReader();
+        
+        fileReader.addEventListener('load', event => {
+            try {
+                const { result } = event.target;
+                // Читаем весь объект таблицы Excel в двоичном потоке
+                const workbook = XLSX.read(result, { type: 'binary' });
+                let data = []; // сохранить полученные данные
+                // проходим каждый лист для чтения (здесь по умолчанию читается только первый лист)
+                for (const sheet in workbook.Sheets) {
+                    if (workbook.Sheets.hasOwnProperty(sheet)) {
+                        // Используем метод sheet_to_json для преобразования Excel в данные JSON
+                        data = data.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet], {header: 1}));
+                        // break; // Если берется только первая таблица, раскомментируйте эту строку
+                    }
+                }
 
+                data.map((item, i) => {
+                    const [ new_lot_name, new_lot_unit, new_lot_need, new_lot_product_link, new_lot_product_name, new_lot_price ] = item;
+                    //разобрали строку xcel
+                    //теперь надо найти соответсвие имени - строке 
+                    $('#lots_show').find('tr').each(function(){
+                      var $name = $(this).find('.lot_name').text();
+                      if ($name == new_lot_name){
+                        $(this).find('input[name="product_name"]').val(new_lot_product_name);
+                        $(this).find('.middle').val(new_lot_price);
+                      }
+                    })
+
+                })
+                
+                } catch (err) {
+                    // Соответствующие запросы о неправильном типе ошибки файла могут быть брошены сюда
+                    console.log ('Неверный тип файла');
+                    return;
+                }
+        });
+        fileReader.readAsBinaryString(files[0]);
+    });
+
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <?
 // Аукцион ИТ скрывать столбцы для участников если аукцион не завершен

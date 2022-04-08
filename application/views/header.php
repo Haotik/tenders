@@ -852,6 +852,7 @@
         ?>
         <script>
             $(document).ready(function () {
+                $.post('/classes/change_status.php'); //старт тендеров на хитах
                 <?php
                 if ( !empty($this->uri->segments[2]) && ($this->uri->segments[2] == 'users' || $this->uri->segments[2] == 'users_confirm') ) {
                 ?>
