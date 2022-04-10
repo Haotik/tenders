@@ -293,6 +293,19 @@
                 <w:t>- История ставок (скрин. экрана)</w:t>
             </w:r>
         </w:p>
+        <w:br/>
+        <w:br/>
+        <w:p w:rsidR="006831C7" w:rsidRDefault="00C552E5" w:rsidP="00390880">
+            <w:r>
+                <w:t>Выбран лидером:</w:t>
+                <w:br/>
+                <w:t>{TENDER_VICTORY}</w:t>
+                <w:br/>
+                <w:t>Причина - {VICTORY_REASON}</w:t>
+            </w:r>
+        </w:p>
+        <w:br/>
+        <w:br/>
         <w:p w:rsidR="001F6FF8" w:rsidRDefault="001F6FF8" w:rsidP="001F6FF8"/>
         <w:p w:rsidR="001F6FF8" w:rsidRPr="00075511" w:rsidRDefault="001F6FF8" w:rsidP="001F6FF8">
             <w:pPr>
