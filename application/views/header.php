@@ -69,6 +69,7 @@
     } // if ($this->uri->segments[2] == 'add' || $this->uri->segments[2] == 'edit' || $this->uri->segments[2] == 'show') {
     ?>
         <script language="JavaScript" type="text/javascript">
+            $.post('/classes/change_status.php'); //старт на хитах
             <?php
             if ($this->uri->segments[2] == 'add' || $this->uri->segments[2] == 'edit') {
             ?>
@@ -132,7 +133,6 @@
             }
             ?>
             $(document).ready(function () {
-                $.post('/classes/change_status.php'); //старт на хитах
                 <?php
                 if ($this->uri->segments[2] == 'user_edit' || $this->uri->segments[2] == 'register') {
                 ?>

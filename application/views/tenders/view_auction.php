@@ -566,13 +566,16 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             ?>
             </tbody>
         </table>
-        <?foreach ($kp_files as $kp_file){
-            $kp_path = "http://tenders/data/kp_tenders/" . $kp_file["file"];
-         ?>
-            <a href="<?=$kp_path?>" target='_blank'>Коммерческое предложение участника: <?=$kp_file["user"]?></a>
-        <?}?>
+        <?
 
-        <?php
+        if (!is_null($kp_files[0])) {
+            foreach ($kp_files as $kp_file){
+            $kp_path = "http://tenders/data/kp_tenders/" . $kp_file["file"];
+        ?>
+            <a href="<?=$kp_path?>" target='_blank'>Коммерческое предложение участника: <?=$kp_file["user"]?></a>
+        <?}
+        }
+
         if ((($group_id == 2 && $tender_author == FALSE) || $group_id == 1 || $group_id == 6) && $game_tender == FALSE) {
             echo "	<p style=\"margin: 0; padding: 0; text-align: right\">" . form_reset('cancel', 'Отмена', 'class="button"') . "&nbsp;" . form_submit('run', 'Сделать ставку', 'class="button"') . "</p>";
             echo form_close();

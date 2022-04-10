@@ -138,7 +138,8 @@ class Auth extends CI_Controller
 			$this->form_validation->set_rules('contacts', 'Контактные лица', 'trim|required|xss_clean');
 			$this->form_validation->set_rules('requisites', 'Реквизиты для включения в контракт', 'trim|required|xss_clean');
 
-			$this->form_validation->set_rules('register_password', 'Пароль', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']|alpha_dash');
+			//$this->form_validation->set_rules('register_password', 'Пароль', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']|alpha_dash');
+			$this->form_validation->set_rules('register_password', 'Пароль', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']');
 			$this->form_validation->set_rules('confirm_password', 'Еще раз Пароль', 'trim|required|xss_clean|matches[register_password]');
 
 			$data['errors'] = array();
@@ -146,7 +147,7 @@ class Auth extends CI_Controller
 			$email_activation = $this->config->item('email_activation', 'tank_auth');
 
 			if ($this->form_validation->run()) {								// validation ok
-				if (!is_null($data = $this->tank_auth->create_user(
+				if (!is_null($data = $this->tank_auth->create_user_from_admin(
 						$use_username ? $this->form_validation->set_value('username') : '',
 						$this->form_validation->set_value('email'),
 						$this->form_validation->set_value('register_password'),
@@ -270,7 +271,8 @@ class Auth extends CI_Controller
 			$this->form_validation->set_rules('contacts', 'Контактные лица', 'trim|required|xss_clean');
 			$this->form_validation->set_rules('requisites', 'Реквизиты для включения в контракт', 'trim|required|xss_clean');
 
-			$this->form_validation->set_rules('register_password', 'Пароль', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']|alpha_dash');
+			//$this->form_validation->set_rules('register_password', 'Пароль', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']|alpha_dash');
+			$this->form_validation->set_rules('register_password', 'Пароль', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']');
 			$this->form_validation->set_rules('confirm_password', 'Еще раз Пароль', 'trim|required|xss_clean|matches[register_password]');
 
 			$data['errors'] = array();

@@ -195,6 +195,18 @@ class Users extends CI_Model
 		return NULL;
 	}
 
+	function create_user_from_admin($data, $activated = TRUE)
+	{
+		$data['created'] = date('Y-m-d H:i:s');
+        $data['activated'] = 1;
+		if ($this->db->insert($this->table_name, $data)) {
+			$user_id = $this->db->insert_id();
+			//if ($activated)	$this->create_profile($user_id);
+			return array('user_id' => $user_id);
+		}
+		return NULL;
+	}
+
 	/**
 	 * Activate user if activation key is valid.
 	 * Can be called for not activated users only.

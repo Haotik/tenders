@@ -198,11 +198,18 @@ if ($no_tender == TRUE) {
         </tr>
         <tr>
             <td class="td_left">Опции ставки<span class="red">*</span>:</td>
+            <?if ($group_id != 5) {?>
             <td>
                 <?php echo form_radio($type_rate_standard); ?> <?php echo form_label('Стандартная ставка', 'type_rate_standard'); ?>
                 <br/>
                 <?php echo form_radio($type_rate_step); ?> <?php echo form_label('Ставка не меньше шага', 'type_rate_step'); ?>
             </td>
+            <?}else{?>
+                <td>
+                <?php echo form_radio($type_rate_standard); ?> <?php echo form_label('Стандартная ставка', 'type_rate_standard'); ?>
+                </td>
+                <script>$('#type_rate_standard').trigger('click');</script>
+            <?}?>
         </tr>
         <tr>
             <td class="td_left">Опции торгов<span class="red">*</span>:</td>
@@ -234,6 +241,7 @@ if ($no_tender == TRUE) {
                 <?php echo form_input($scan_minute); ?> минут
             </td>
         </tr>
+        <?if ($group_id != 5) {?>
         <tr>
             <td class="td_left"><?php echo form_label('Участники могут видеть друг-друга', $users_visible['id']); ?>:
             </td>
@@ -241,6 +249,7 @@ if ($no_tender == TRUE) {
                 <?php echo form_checkbox($users_visible); ?>
             </td>
         </tr>
+        <?}?>
     </table>
 
     <h4>Дополнительные условия к аукциону</h4>
