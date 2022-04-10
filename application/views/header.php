@@ -90,6 +90,7 @@
                 if (status === true) {
                     $.post('/tenders/run/', $("#runtender-form").serialize(),
                         function (txt) {
+                            console.log(txt);
                             get = txt.split('|');
 
                             if (get[0] == 'success') {

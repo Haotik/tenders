@@ -455,10 +455,10 @@ class Tenders extends CI_Controller
 
             echo $this->json_encode($arrayToJs);
         } else {
+
             // Запись ставок в базу
             $tender_id = (int)$this->input->post('tender_id');
             $data['no_tender'] = $data['game_tender'] = FALSE;
-
 
             if ($tender_id < 0)
                 $data['no_tender'] = TRUE;
@@ -540,7 +540,9 @@ class Tenders extends CI_Controller
                                 }
                             }
 
-                        } else {
+                        } else if ($tender['type_auction'] != 3) {
+                            // code...
+                        }{
 
                             //$tender_results_lotes = $this->tenders->get_tender_results_lotes_best_min((int)$lot['tender_id']);
                             $tender_results_lotes = $this->tenders->get_tender_results_lotes_best_min($tender_id);
@@ -629,7 +631,10 @@ class Tenders extends CI_Controller
 
             if ($tender['type_auction'] == 3) {
                     // Записываем лоты
-                    $this->tenders->set_tenders_lotes(array($key => floatval($value)), (int)$tender_id, (int)$user_id);
+                  foreach ($this->input->post('tender_lot') as $key => $value) {
+
+                        $this->tenders->set_tenders_lotes(array($key => floatval($value)), (int)$tender_id, (int)$user_id);
+                    }
 
                     // Считаем результаты
                     $this->tenders->set_tenders_results((int)$tender_id, (int)$user_id);
