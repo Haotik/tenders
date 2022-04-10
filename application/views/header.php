@@ -431,9 +431,13 @@
                         console.log(data);
 
                         let html = data.map((item, i) => {
-                            const [ new_lot_name, new_lot_unit, new_lot_need, new_lot_product_link ] = item;
-                            var tr_lots = $("#lots tbody tr").length + 1;
-                            return "<tr id=\"lots_" + (tr_lots + i) + "\"><td>" + new_lot_name + "</td><td>" + new_lot_unit + "</td><td>" + new_lot_need + '</td><td class="col_start_sum"></td><td class="col_product_link"><a href="' + new_lot_product_link + '" target="_blank">Ссылка</a></td><td class=\"col_rate_step\">' + '' + "</td><td><a href=\"\" class=\"button-delete\" title=\"Удалить\" onclick=\"noty({ animateOpen: {opacity: 'show'}, animateClose: {opacity: 'hide'}, layout: 'center', text: 'Вы уверены, что хотите удалить лот из аукциона?', buttons: [ {type: 'btn btn-mini btn-primary', text: 'Удалить', click: function(\$noty) { \$noty.close(); $.DeleteLot(" + (tr_lots + i) + "); } }, {type: 'btn btn-mini btn-danger', text: 'Отмена', click: function(\$noty) { \$noty.close(); } } ], closable: false, timeout: false }); return false;\"></a></td></tr>";
+                            const [ new_lot_name, new_lot_unit, new_lot_need,new_lot_model, new_lot_product_link ] = item;
+                            if (new_lot_name != "Наименование") {
+                                var tr_lots = $("#lots tbody tr").length + 1;
+                                return "<tr id=\"lots_" + (tr_lots + i) + "\"><td>" + new_lot_name + "</td><td>" + new_lot_unit + "</td><td>" + new_lot_need + '</td><td class="col_start_sum"></td><td class="col_product_link"><a href="' + new_lot_product_link + '" target="_blank">Ссылка</a></td><td class=\"col_rate_step\">' + '' + "</td><td><a href=\"\" class=\"button-delete\" title=\"Удалить\" onclick=\"noty({ animateOpen: {opacity: 'show'}, animateClose: {opacity: 'hide'}, layout: 'center', text: 'Вы уверены, что хотите удалить лот из аукциона?', buttons: [ {type: 'btn btn-mini btn-primary', text: 'Удалить', click: function(\$noty) { \$noty.close(); $.DeleteLot(" + (tr_lots + i) + "); } }, {type: 'btn btn-mini btn-danger', text: 'Отмена', click: function(\$noty) { \$noty.close(); } } ], closable: false, timeout: false }); return false;\"></a></td></tr>";
+                            } else {
+                                return false;
+                            }
                         }).join("\n");
 
                         $('.lots-table tbody').prepend(html);
