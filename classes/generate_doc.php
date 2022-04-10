@@ -38,7 +38,7 @@ if (!empty($tender)) {
     $w = new WordDocument("protocol_" . (int)$tender['id'] . ".docx");
 
     $total_start_sum = $db->QuerySingleRowArray("SELECT SUM(`start_sum`) as `sum`, `step_lot` FROM `tenders_lotes` WHERE `tender_id` = " . $tender_id, MYSQL_ASSOC);
-    $users = $db->QueryArray("SELECT `t2`.`name`, `t1`.`total_sum`, `t1`.`leader` FROM `tenders_results` `t1`, `user_profiles` `t2` WHERE `t1`.`tender_id` = " . $tender_id . " AND `t1`.`user_id` = `t2`.`user_id`", MYSQL_ASSOC);
+    $users = $db->QueryArray("SELECT `t2`.`name`, `t1`.`total_sum`, `t1`.`leader`,`t1`.`comment` FROM `tenders_results` `t1`, `user_profiles` `t2` WHERE `t1`.`tender_id` = " . $tender_id . " AND `t1`.`user_id` = `t2`.`user_id`", MYSQL_ASSOC);
 //    echo "<pre>";
 //    print_r($users);die;
 
@@ -47,7 +47,7 @@ if (!empty($tender)) {
         foreach ($users as $key => $value) {
             $array_users[$value['name']] = $value['total_sum'];
             if ($value['leader'] == 1)
-                $leader = array('name' => $value['name'], 'total_sum' => $value['total_sum']);
+                $leader = array('name' => $value['name'], 'total_sum' => $value['total_sum'],'comment' => $value['comment']);
         }
     }
     $customer = $db->QuerySingleRowArray("SELECT * FROM `user_profiles` WHERE `user_id` = {$tender['user_id']}", MYSQL_ASSOC);
@@ -79,6 +79,11 @@ if (!empty($tender)) {
         }, $participants)),
         "TENDER_DESCRIPTION" => "<w:t>" . str_replace("<br />", "</w:t><w:br/><w:t>", nl2br($tender['description'])) . "</w:t>",
     );
+        $array_content["VICTORY_REASON"] = "Не указано";
+    
+    if ($leader['comment'] != ''){
+        $array_content["VICTORY_REASON"] = $leader["comment"];
+    }
 
     $commission = array();
     $com = "";
