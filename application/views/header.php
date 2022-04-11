@@ -565,7 +565,7 @@
                     if ($("#runtender-form").validationEngine('validate') == true) {
                         $.post('/tenders/run/', $("#runtender-form").serialize(),
                             function (txt) {
-                                console.log(txt);
+                               // console.log(txt);
                                 get = txt.split('|');
                                 if (get[0] == 'success') {
                                     noty({

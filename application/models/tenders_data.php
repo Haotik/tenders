@@ -409,6 +409,7 @@ class Tenders_data extends CI_Model
         $i = 0;
         $data_arr = array();
         foreach ($data as $k => $v) {
+            var_dump($v);
             if (!empty($v)) {
                 // Удаляем старое значение лота
                 $this->db->where('lote_id', (int)$k);
@@ -434,6 +435,37 @@ class Tenders_data extends CI_Model
         return TRUE;
     }
 
+    function set_tenders_lotes_it($data, $tender_id, $user_id)
+    {
+        $i = 0;
+        $data_arr = array();
+        foreach ($data as $k => $v) {
+            var_dump($v);
+            if (!empty($v)) {
+                // Удаляем старое значение лота
+                $this->db->where('lote_id', (int)$k);
+                $this->db->where('tender_id', (int)$tender_id);
+                $this->db->where('user_id', (int)$user_id);
+                $this->db->delete($this->results_lotes_table_name);
+
+                $data_arr[$i]['lote_id'] = (int)$k;
+                $data_arr[$i]['user_id'] = (int)$user_id;
+                $data_arr[$i]['created'] = date("Y-m-d H:i:s");
+                $data_arr[$i]['tender_id'] = $tender_id;
+                $data_arr[$i]['value'] = $v["value"];
+                $data_arr[$i]['product_name'] = $v["name"];
+                $i++;
+            }
+        }
+        if (!empty($data_arr)) {
+//var_dump($data_arr); exit;
+            $this->db->insert_batch($this->results_lotes_table_name, $data_arr);
+            $this->db->insert_batch($this->results_lotes_history_table_name, $data_arr);
+        }
+
+        return TRUE;
+    }
+
     function get_tenders_lotes_by_user($tender_id, $user_id = 0)
     {
         $this->db->where('tender_id', (int)$tender_id);
@@ -446,10 +478,15 @@ class Tenders_data extends CI_Model
         if ($query->num_rows() > 0) {
             $rows = array();
             foreach ($query->result_array() as $key => $value) {
+                
                 if (!empty($user_id))
                     $rows[(int)$value['lote_id']] = $value['value'];
                 else
                     $rows[(int)$value['user_id']][(int)$value['lote_id']] = $value['value'];
+
+                if (!empty($value['product_name'])) {
+                    $rows[(int)$value['user_id']][(int)$value['lote_id']]['product_name'] = $value['product_name'];
+                }
             }
             return $rows;
         }

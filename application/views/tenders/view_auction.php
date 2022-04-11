@@ -18,6 +18,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
         'class' => 'validate[required]',
         'style' => 'width: 50px;'
     );
+
     ?>
     <h4><?php echo $page_title; ?></h4>
     <table class="reg">
@@ -402,13 +403,13 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 // Заполняем лоты аукциона (для участников)
                 if (!empty($tender_lotes)) {
                     foreach ($tender_lotes as $key => $value) {
-
+                        $lot_seller_name = $user_products_name[$value['id']];
                         echo "<tr id=\"lots_" . $value['id'] . "\"><td class='lot_name'>" 
                         . $value['name'] . "</td><td>" 
                         . $value['unit'] . "</td><td>" 
                         . $value['need'] . "</td><td>" 
                         . ($tender_detail['type_auction'] == 3 ? '<a href="' . $value['product_link'] . '" target="_blank">Ссылка</a>' : $value['start_sum']) . "</td>";
-                        echo '<td><input type="text" name="product_name" value="'.$value["product_name"].'"></td>';
+                        echo '<td><input type="text" name="product_name['. $value['id'] . ']" value="'.$lot_seller_name['product_name'].'"></td>';
 
                         if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
                             echo "<td class = 'step_lot'>" . $value['step_lot'] . "</td>";

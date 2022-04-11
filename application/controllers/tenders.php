@@ -230,6 +230,7 @@ class Tenders extends CI_Controller
                 $data['tender_options_user'] = $this->tenders->get_tenders_options_by_user((int)$tender_id, (int)$orig_user_id);
                 $data['tender_lotes_user'] = $this->tenders->get_tenders_lotes_by_user((int)$tender_id, (int)$orig_user_id);
 
+                $data['user_products_name'] = $data['tender_lotes_user'][$orig_user_id];
                 // Проверяем, закончился аукцион?
                 if (strtotime($tender['begin_date']) > time()) {
                     $data['start_tender'] = FALSE;
@@ -387,6 +388,7 @@ class Tenders extends CI_Controller
                         }
 
                         // Записываем лоты
+                        var_dump("Nen");
                         $this->tenders->set_tenders_lotes(array($lot_id => floatval($value)), (int)$lot['tender_id'], (int)$user_id);
 
                         // Считаем результаты
@@ -435,6 +437,7 @@ class Tenders extends CI_Controller
                             $this->tenders->update_tender($data_tender, (int)$lot['tender_id']);
                         }
 
+                        //var_dump("Nen 2");
                         // Записываем лоты
                         $this->tenders->set_tenders_lotes(array($lot_id => floatval($value)), (int)$lot['tender_id'], (int)$user_id);
 
@@ -522,7 +525,7 @@ class Tenders extends CI_Controller
                                         $this->tenders->update_tender($data_tender, $tender_id);
                                     }
 
-
+                                    //var_dump("Nen 3");
                                     // Записываем лоты
                                     $this->tenders->set_tenders_lotes(array($key => floatval($value)), (int)$tender_id, (int)$user_id);
 
@@ -603,7 +606,7 @@ class Tenders extends CI_Controller
                                         $this->tenders->update_tender($data_tender, $tender_id);
                                     }
 
-
+                                    //var_dump("Nen 4");
                                     // Записываем лоты
                                     $this->tenders->set_tenders_lotes(array($key => floatval($value)), (int)$tender_id, (int)$user_id);
 
@@ -631,9 +634,14 @@ class Tenders extends CI_Controller
 
             if ($tender['type_auction'] == 3) {
                     // Записываем лоты
+
                   foreach ($this->input->post('tender_lot') as $key => $value) {
 
-                        $this->tenders->set_tenders_lotes(array($key => floatval($value)), (int)$tender_id, (int)$user_id);
+                        $lot_data[$key] = [
+                            'value' => $value,
+                            'name' => $this->input->post('product_name')[$key]
+                        ];
+                       $this->tenders->set_tenders_lotes_it($lot_data, (int)$tender_id, (int)$user_id);
                     }
 
                     // Считаем результаты
@@ -788,8 +796,9 @@ class Tenders extends CI_Controller
                         // Записываем лоты
                         $lot_data = [
                             "value"=>$this->input->get('tender_lot'),
-                            "seller_name" => $this->input->get('product_name')
+                            "product_name" => $this->input->get('product_name')
                         ];
+
                         $this->tenders->set_tenders_lotes($lot_data, (int)$tender_id, (int)$user_id);
 
                         // Считаем результаты
@@ -808,7 +817,7 @@ class Tenders extends CI_Controller
             if ($data['no_tender'] == TRUE || $data['game_tender'] == TRUE)
                 echo "error|Ваши ставки не приняты";
             else
-                echo "success|Ваши ставки приняты";
+                echo "success|Ваши ставки приняты 12";
         }
 
         return TRUE;
