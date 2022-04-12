@@ -327,6 +327,11 @@
                     var new_lot_product_link = $("#new_lot_product_link").val();
                     var new_lot_step_lot = $("#new_lot_step_lot").val();
                     var tr_lots = $("#lots tbody tr").length;
+                    if (new_lot_product_link.indexOf('://') == -1) {
+                        var a = "http://" + new_lot_product_link;
+                        new_lot_product_link = a;
+                    }
+                    console.log(new_lot_product_link);
                     console.log($('.col_product_link').is(":visible"));
                     if (( 
                             new_lot_name.length > 0 
