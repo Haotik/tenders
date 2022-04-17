@@ -319,10 +319,10 @@ if ($no_tender == TRUE) {
     </table>
 
     <h4>Лоты аукциона</h4>
-    <button class="btn btn-primary lots-file-import fileinput-button">
+    <button class="btn btn-primary lots-file-import fileinput-button" type='button'>
         <i class="icon-upload icon-white"></i>
         <span>Загрузить и заполнить</span>
-        <input type="file" name="lots_file_add" accept=".xls,.xlsx">
+        <input type="file" name="lots_file_base_add_x" accept=".xls,.xlsx">
     </button>
     <table class="reg tablesorter lots-table" id="lots">
         <thead>

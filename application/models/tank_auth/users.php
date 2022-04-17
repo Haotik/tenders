@@ -545,6 +545,7 @@ class Users extends CI_Model
     function users_list_updatetender($tender_id)
     {
         $tender_stakes = $this->tenders->get_tenders_lotes_by_user($tender_id);
+
         $tender_users = array();
         $in_array = '';
         if ($tender_stakes != null) {
@@ -573,6 +574,39 @@ class Users extends CI_Model
                             . $users_filter;
 
         $query = $this->db->query($sql_query);
+        if ($query->num_rows() > 0) return $query->result_array();
+        return NULL;
+    }
+
+    function users_list_updatetender_it($tender_id)
+    {
+        $tender_stakes = $this->tenders->get_tenders_lotes_by_user($tender_id);
+        
+        $tender_users = array();
+        $in_array = '';
+        if ($tender_stakes != null) {
+            foreach ($tender_stakes as $id => $stakes) {
+                $tender_users[] = $id;
+            }
+            $in_array = implode(',', $tender_users);
+        }
+
+        $users = $this->tenders->get_tenders_users($tender_id);
+        $users_filter = '';
+        if (count($users)) {
+            $users_ids = array_map(function ($item) {
+                return $item['user_id'];
+            }, $users);
+            $users_filter = ' AND u.id IN ( '.implode(', ', $users_ids).' )';
+        }
+
+        $sql_query = "SELECT u.id, u.email, up.name as user_name
+                      FROM users u
+                      INNER JOIN user_profiles up ON u.id = up.user_id                       
+                      WHERE u.activated = 1". $users_filter;
+
+        $query = $this->db->query($sql_query);
+
         if ($query->num_rows() > 0) return $query->result_array();
         return NULL;
     }

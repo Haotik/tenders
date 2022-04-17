@@ -412,7 +412,7 @@
                     return false;
                 }
                 //с загрузкой на сервер
-                $('input[name="lots_file_add"]').change(function(e) {
+                $('input[name="lots_file_base_add_x"]').change(function(e) {
                     e.preventDefault();
                         // Получить загруженный объект файла
                     const { files } = e.target;
@@ -471,15 +471,7 @@
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", "/upload_tender/it_tenders_upload.php");
                     xhr.send(formData);
-                    
-                    /*$.ajax({
-                        type: "POST",
-                        url: "/upload_tender/it_tenders_upload.php?id="+tender_id,
-                        data: $file,
-                        success: function(html){
-                            console.log('loaded');
-                        }
-                    }); */
+
                     return false;
                 }
 

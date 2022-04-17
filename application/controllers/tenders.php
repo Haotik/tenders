@@ -650,7 +650,7 @@ class Tenders extends CI_Controller
                     $this->tenders->set_tenders_leader((int)$tender_id);
 
                     // Отправка письма подписчикам
-                    $this->_send_email('updatetender', 'Изменения в аукционе', array('tender_id' => $tender_id));
+                    $this->_send_email('updatetender_it', 'Изменения в аукционе', array('tender_id' => $tender_id));
                     $data['no_tender'] = FALSE;
                 }
 
@@ -816,7 +816,7 @@ class Tenders extends CI_Controller
             if ($data['no_tender'] == TRUE || $data['game_tender'] == TRUE)
                 echo "error|Ваши ставки не приняты";
             else
-                echo "success|Ваши ставки приняты 12";
+                echo "success|Ваши ставки приняты";
         }
 
         return TRUE;
@@ -1203,8 +1203,12 @@ class Tenders extends CI_Controller
 
                     if ($is_edit == FALSE) {
                         // Отправка письма подписчикам
-
-                        $this->_send_email('newtender', 'Новый аукцион', array('tender_id' => $tender_id));
+                        if ($type_auction == 3) {
+                            $this->_send_email('newtender_it', 'Новый аукцион', array('tender_id' => $tender_id));
+                        } else{
+                            $this->_send_email('newtender', 'Новый аукцион', array('tender_id' => $tender_id));
+                        }
+                        
 
                         echo "success|Тендер успешно создан";
                     } else
@@ -1507,6 +1511,130 @@ class Tenders extends CI_Controller
                 }
             }
         }
+    }
+
+    function send_email($type = '', $subject='тест', $data = '')
+    {
+        $this->load->library('email');
+
+        $type = $_GET['type'];
+        $data = $_GET;
+        $config['protocol'] = 'sendmail';
+        $config['mailtype'] = 'html';
+        $config['validate'] = true;
+
+        $this->email->initialize($config);
+
+        $tender = array();
+        if (!empty($data['tender_id'])) {
+            $tender = $this->tenders->get_tenders_by_id((int)$data['tender_id']);
+            $tender_users = $this->tenders->get_tenders_lotes_by_user((int)$data['tender_id']);
+        }
+
+        if ($tender['type_auction'] == 3 OR $type == "it_winner") {
+            $autor = $this->tank_auth->user($tender['user_id']);
+            $winner_sum = 0;
+
+            if ($tender["winner"] != 0) {
+                foreach ($tender_users[$tender["winner"]] as $c_prc){
+                    $winner_sum = $tender_sum + $c_prc;
+                }
+            } 
+            
+            $contact_string = $autor["user_name"] .PHP_EOL. $autor["phone"] .PHP_EOL. $autor["email"];
+
+            if ($type == "newtender_it") {
+                $users_list = $this->users->users_list_newtender($tender['id']);
+            } elseif ($type == "updatetender_it") {
+                $users_list = $this->users->users_list_updatetender_it($tender['id']);
+            } else {
+                $users_list[0] = $this->tank_auth->user($tender["winner"]);
+            }
+
+            if (!empty($users_list)) {
+                foreach ($users_list as $k => $v) {
+                    $file_base_path = "http://" . $this->config->item('engine_url') . "/upload_tender/files/". $tender['id'] . "/base_data.xlsx";
+                    $repl_array = array(
+                        "%user%" => $v['user_name'],
+                        "%tender_name%" => $tender['title'],
+                        "%tender_id%" => $tender['id'], 
+                        "%tender_date_start%" => date("d.m.Y H:i", strtotime($tender['begin_date'])), 
+                        "%tender_date_end%" => date("d.m.Y H:i", strtotime($tender['end_date'])),
+                        "%contacts%" => $contact_string,
+                        "%file_link%" => '',
+                        "%comment%" => $tender['change_reason'],
+                        "%final_price%" => $winner_sum,
+                        "%url_tender%" => "<a href='http://" . $this->config->item('engine_url') . "/tenders/show/" . $tender['id']."' target=_blank>Ссылка</a>",
+                    );
+
+                    if (file_exists($file_base_path)) {
+                        $repl_array["%file_link%"] =  "<a href='".$file_base_path."' target=_blank>Ссылка</a>";
+                    }
+
+                $text_message = $this->tenders->get_settings("email-" . $type);
+                $message = $text_message['value'];
+                unset($text_message);
+                if (!empty($message)) {
+                    foreach ($repl_array as $key => $value) {
+                        $message = str_replace($key, $value, $message);
+                    }
+                }
+                $message = nl2br($message);
+                $this->email->from($this->config->item('engine_admin_email'), $this->config->item('engine_title'));
+                        //$this->email->from('robot@adyn.ru', $this->config->item('engine_title'));
+                $this->email->reply_to($this->config->item('engine_admin_email'), $this->config->item('engine_title'));
+                $this->email->to($v['email']);
+                $this->email->subject($this->config->item('engine_title') . ": " . $subject);
+                $this->email->message($message);
+                print_r2($this->email->_header_str);
+                print_r2($this->email->_body);
+                $this->email->send();
+                echo "<hr><hr>";
+                }
+            }
+
+        } else {
+            if ($type == "newtender") {
+                $users_list = $this->users->users_list_newtender($tender['id']);
+            } elseif ($type == "updatetender") {
+                $users_list = $this->users->users_list_updatetender($tender['id']);
+            } else {
+                $users_list = $this->tank_auth->users_list();
+            }
+
+            if (!empty($users_list)) {
+                foreach ($users_list as $k => $v) {
+
+                    if (
+                        ($v['activated'] == 1 && $type == "newtender" && $v['notice_new_auctions'] == 1) ||
+                        ($v['activated'] == 1 && $type == "updatetender" && $v['notice_other_members'] == 1 && !empty($tender_users[$v['id']])) ||
+                        ($v['activated'] == 1 && $type == "welcomeuser" && $v['id'] == $data['user_id'])
+                    ) {
+                        $repl_array = array("%user%" => $v['user_name'], "%email_user%" => $v['email'], "%pass_user%" => $v['password'], "%url_user%" => "http://" . $this->config->item('engine_url') . "/auth/user_edit/" . $v['id'], "%url_site%" => "http://" . $this->config->item('engine_url'), "%tender_name%" => $tender['title'], "%tender_date_start%" => date("d.m.Y H:i", strtotime($tender['begin_date'])), "%tender_date_end%" => date("d.m.Y H:i", strtotime($tender['end_date'])), "%url_tender%" => "http://" . $this->config->item('engine_url') . "/tenders/show/" . $tender['id']);
+
+                        $text_message = $this->tenders->get_settings("email-" . $type);
+                        $message = $text_message['value'];
+                        unset($text_message);
+                        if (!empty($message)) {
+                            foreach ($repl_array as $key => $value) {
+                                $message = str_replace($key, $value, $message);
+                            }
+                        }
+                        $message = nl2br($message);
+
+                        $this->email->from($this->config->item('engine_admin_email'), $this->config->item('engine_title'));
+                        //$this->email->from('robot@adyn.ru', $this->config->item('engine_title'));
+                        $this->email->reply_to($this->config->item('engine_admin_email'), $this->config->item('engine_title'));
+                        $this->email->to($v['email']);
+                        $this->email->subject($this->config->item('engine_title') . ": " . $subject);
+                        $this->email->message($message);
+                        $this->email->send();
+                        
+                    }
+                }
+            }
+        }    
+        
 
     }
 
