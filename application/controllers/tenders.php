@@ -405,6 +405,7 @@ class Tenders extends CI_Controller
                     }
 
                 } elseif($tender['type_auction'] == 3){
+                    $arrayToJs = array();
                     $arrayToJs[0] = 'tender_lot_' . $lot_id;
                     $arrayToJs[1] = true;
                 } else {
@@ -544,8 +545,6 @@ class Tenders extends CI_Controller
                             }
 
                         } else if ($tender['type_auction'] != 3) {
-                            // code...
-                        }{
 
                             //$tender_results_lotes = $this->tenders->get_tender_results_lotes_best_min((int)$lot['tender_id']);
                             $tender_results_lotes = $this->tenders->get_tender_results_lotes_best_min($tender_id);

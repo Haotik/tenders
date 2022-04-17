@@ -134,7 +134,7 @@ $(document).ready(function($) {
                     $('#lots_show').find('tr').each(function(){
                       var $name = $(this).find('.lot_name').text();
                       if ($name == new_lot_name){
-                        $(this).find('input[name="product_name"]').val(new_lot_product_name);
+                        $(this).find('.product_name').val(new_lot_product_name);
                         $(this).find('.middle').val(new_lot_price);
                       }
                     })

@@ -327,7 +327,7 @@ class Tenders_data extends CI_Model
             $query->free_result();
             $arr_lote_id = substr($arr_lote_id, 0, -1);
 
-            $sql = "SELECT `t1`.`value`, `t1`.`lote_id`, `t2`.`name` as `res_name` FROM `" . $this->results_lotes_table_name . "` `t1`, `user_profiles` `t2` WHERE `t1`.`user_id` = `t2`.`user_id` AND `t1`.`tender_id` = " . (int)$tender_id . " AND `t1`.`lote_id` IN (" . $arr_lote_id . ") ORDER BY `t1`.`created` DESC, `t1`.`value` ASC";
+            $sql = "SELECT `t1`.`value`, `t1`.`lote_id`,`t1`.`product_name`, `t2`.`name` as `res_name` FROM `" . $this->results_lotes_table_name . "` `t1`, `user_profiles` `t2` WHERE `t1`.`user_id` = `t2`.`user_id` AND `t1`.`tender_id` = " . (int)$tender_id . " AND `t1`.`lote_id` IN (" . $arr_lote_id . ") ORDER BY `t1`.`created` DESC, `t1`.`value` ASC";
 
             $query = $this->db->query($sql);
             if ($query->num_rows() > 0) {
@@ -335,6 +335,7 @@ class Tenders_data extends CI_Model
                     if (empty($new_cnt[(int)$value['lote_id']]) && $arr_best_value[$value['lote_id']] == $value['value']) {
                         $new_cnt[(int)$value['lote_id']]['best_value'] = $value['value'];
                         $new_cnt[(int)$value['lote_id']]['name'] = $value['res_name'];
+                        $new_cnt[(int)$value['lote_id']]['product_name'] = $value['product_name'];
                     }
                 }
                 return $new_cnt;

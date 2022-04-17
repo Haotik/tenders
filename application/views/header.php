@@ -492,7 +492,12 @@
                         $("#lots tbody tr").find('td').each(function (i) {
                             // if ($(this).text() != "") {
                             if ($(this).find(".button-delete").length === 0) {
-                                arr_lots[k] = $(this).text();
+                                if ($(this).text() == "Ссылка") {
+                                    var href = $(this).find('a').attr('href');
+                                    arr_lots[k] = href;
+                                } else{
+                                    arr_lots[k] = $(this).text();
+                                }
                                 k++;
                             }
                             // }
@@ -570,7 +575,7 @@
                     if ($("#runtender-form").validationEngine('validate') == true) {
                         $.post('/tenders/run/', $("#runtender-form").serialize(),
                             function (txt) {
-                               // console.log(txt);
+                                console.log(txt);
                                 get = txt.split('|');
                                 if (get[0] == 'success') {
                                     noty({

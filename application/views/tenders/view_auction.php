@@ -389,11 +389,20 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                         echo "<tr id=\"lots_" . $value['id'] . "\"><td class='lot_name'>" 
                         . $value['name'] . "</td><td>" 
                         . $value['unit'] . "</td><td>" 
-                        . $value['need'] . "</td><td>" 
-                        . ($tender_detail['type_auction'] == 3 ? '<a href="' . $value['product_link'] . '" target="_blank">Ссылка</a>' : $value['start_sum']) . "</td>" 
+                        . $value['need'] . "</td><td>" ;
+                        if ($tender_detail['type_auction'] == 3) {
+
+                            echo $value['product_link'] . "</td><td>"
+                            . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['product_name'] : "нет") . "</td><td>"
+                            . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td><td>" 
+                            . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['name'] : "нет");
+                        }else{
+                            echo $value['start_sum'] . "</td>" 
                         . ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2 ? "<td>" . $value['step_lot'] . "</td>" : "") . "<td>" 
                         . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td><td>" 
-                        . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['name'] : "нет") . "</td></tr>\n";
+                        . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['name'] : "нет");
+                        }
+                        echo "</td></tr>\n";
                     }
 
                      // foreach ($tender_results_lotes as $key => $value) {
@@ -403,13 +412,14 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                 // Заполняем лоты аукциона (для участников)
                 if (!empty($tender_lotes)) {
                     foreach ($tender_lotes as $key => $value) {
+
                         $lot_seller_name = $user_products_name[$value['id']];
                         echo "<tr id=\"lots_" . $value['id'] . "\"><td class='lot_name'>" 
                         . $value['name'] . "</td><td>" 
                         . $value['unit'] . "</td><td>" 
                         . $value['need'] . "</td><td>" 
                         . ($tender_detail['type_auction'] == 3 ? '<a href="' . $value['product_link'] . '" target="_blank">Ссылка</a>' : $value['start_sum']) . "</td>";
-                        echo '<td><input type="text" name="product_name['. $value['id'] . ']" value="'.$lot_seller_name['product_name'].'"></td>';
+                        echo '<td><input type="text" class="product_name" name="product_name['. $value['id'] . ']" value="'.$lot_seller_name['product_name'].'"></td>';
 
                         if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
                             echo "<td class = 'step_lot'>" . $value['step_lot'] . "</td>";
@@ -571,7 +581,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
 
         if (!is_null($kp_files[0])) {
             foreach ($kp_files as $kp_file){
-            $kp_path = "http://tenders/data/kp_tenders/" . $kp_file["file"];
+            $kp_path = "/data/kp_tenders/" . $kp_file["file"];
         ?>
             <a href="<?=$kp_path?>" target='_blank'>Коммерческое предложение участника: <?=$kp_file["user"]?></a>
         <?}
