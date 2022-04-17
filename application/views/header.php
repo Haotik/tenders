@@ -413,7 +413,7 @@
                 }
                 //с загрузкой на сервер
                 $('input[name="lots_file_add"]').change(function(e) {
-                    console.log(1);
+                    e.preventDefault();
                         // Получить загруженный объект файла
                     const { files } = e.target;
                         // Чтение файла через объект FileReader
@@ -458,20 +458,25 @@
                     };
                         // Открыть файл в двоичном режиме
                     fileReader.readAsBinaryString(files[0]);
-                    var tender_id = $('#tender_id_rand').text();
+        
+                    Send_base_file(files[0]);
                     
+                });
+               function Send_base_file($file){
                     //грузим файл на сервер
+                    var tender_id = $('#tender_id_rand').text();
                     var formData = new FormData();
-                    formData.append("file", files[0], 'temp.xlsx');
+                    formData.append("file", $file, 'temp.xlsx');
                     formData.append("tender_id", tender_id);
                     console.log(formData);
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", "/upload_tender/it_tenders_upload.php");
                     xhr.send(formData);
-                });
+                    return false;
+                }
                 //без загрузки на сервер
                 $('input[name="lots_file"]').change(function(e) {
-                    console.log(1);
+                     e.preventDefault();
                         // Получить загруженный объект файла
                     const { files } = e.target;
                         // Чтение файла через объект FileReader
