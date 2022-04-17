@@ -807,3 +807,6 @@ table.tablesorter tbody .is_deleted td {
 .lots-file-import {
     margin-bottom: .5rem !important;
 }
+#tender_id_rand{
+    display: none;
+}

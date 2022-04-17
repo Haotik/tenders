@@ -148,6 +148,7 @@ if ($no_tender == TRUE) {
     }
     ?>
     <?php echo form_open("", array('id' => 'addtender-form'), array('tender_id' => $tender_id, 'is_add' => (!empty($tender_detail['id']) ? 'false' : 'true'))); ?>
+    <span id="tender_id_rand"><?=$tender_id?></span>
     <table class="reg">
         <tr>
             <td></td>
@@ -321,7 +322,7 @@ if ($no_tender == TRUE) {
     <button class="btn btn-primary lots-file-import fileinput-button">
         <i class="icon-upload icon-white"></i>
         <span>Загрузить и заполнить</span>
-        <input type="file" name="lots_file" accept=".xls,.xlsx">
+        <input type="file" name="lots_file_add" accept=".xls,.xlsx">
     </button>
     <table class="reg tablesorter lots-table" id="lots">
         <thead>
