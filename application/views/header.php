@@ -420,47 +420,46 @@
                     const fileReader = new FileReader();
 
                     fileReader.onload = event => {
-                    try {
-                        const { result } = event.target;
-                            // Читаем весь объект таблицы Excel в двоичном потоке
-                        const workbook = XLSX.read(result, { type: 'binary' });
-                            let data = []; // сохранить полученные данные
-                            // проходим каждый лист для чтения (здесь по умолчанию читается только первый лист)
-                        for (const sheet in workbook.Sheets) {
-                            if (workbook.Sheets.hasOwnProperty(sheet)) {
-                                    // Используем метод sheet_to_json для преобразования Excel в данные JSON
-                                
-                                data = data.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet], {header: 1}));
-                                    // break; // Если берется только первая таблица, раскомментируйте эту строку
+                        try {
+                            const { result } = event.target;
+                                // Читаем весь объект таблицы Excel в двоичном потоке
+                            const workbook = XLSX.read(result, { type: 'binary' });
+                                let data = []; // сохранить полученные данные
+                                // проходим каждый лист для чтения (здесь по умолчанию читается только первый лист)
+                            for (const sheet in workbook.Sheets) {
+                                if (workbook.Sheets.hasOwnProperty(sheet)) {
+                                        // Используем метод sheet_to_json для преобразования Excel в данные JSON
+                                    
+                                    data = data.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet], {header: 1}));
+                                        // break; // Если берется только первая таблица, раскомментируйте эту строку
+                                }
                             }
+                            console.log(data);
+
+                            let html = data.map((item, i) => {
+                                const [ new_lot_name, new_lot_unit, new_lot_need,new_lot_model, new_lot_product_link ] = item;
+                                if (new_lot_name != "Наименование") {
+                                    var tr_lots = $("#lots tbody tr").length + 1;
+                                    return "<tr id=\"lots_" + (tr_lots + i) + "\"><td>" + new_lot_name + "</td><td>" + new_lot_unit + "</td><td>" + new_lot_need + '</td><td class="col_start_sum"></td><td class="col_product_link"><a href="' + new_lot_product_link + '" target="_blank">Ссылка</a></td><td class=\"col_rate_step\">' + '' + "</td><td><a href=\"\" class=\"button-delete\" title=\"Удалить\" onclick=\"noty({ animateOpen: {opacity: 'show'}, animateClose: {opacity: 'hide'}, layout: 'center', text: 'Вы уверены, что хотите удалить лот из аукциона?', buttons: [ {type: 'btn btn-mini btn-primary', text: 'Удалить', click: function(\$noty) { \$noty.close(); $.DeleteLot(" + (tr_lots + i) + "); } }, {type: 'btn btn-mini btn-danger', text: 'Отмена', click: function(\$noty) { \$noty.close(); } } ], closable: false, timeout: false }); return false;\"></a></td></tr>";
+                                } else {
+                                    return false;
+                                }
+                            }).join("\n");
+
+                            $('.lots-table tbody').prepend(html);
+                            rateEbay($("input[name=type_auction]:checked"));
+                            changeRateIT();
+                            e.target.closest(".lots-file-import").innerHTML = e.target.closest(".lots-file-import").innerHTML;
+                            Send_base_file(files[0]);
+                        } catch (err) {
+                            // Соответствующие запросы о неправильном типе ошибки файла могут быть брошены сюда
+                            console.log(err);
+                            console.log ('Неверный тип файла');
+                            return;
                         }
-                        console.log(data);
-
-                        let html = data.map((item, i) => {
-                            const [ new_lot_name, new_lot_unit, new_lot_need,new_lot_model, new_lot_product_link ] = item;
-                            if (new_lot_name != "Наименование") {
-                                var tr_lots = $("#lots tbody tr").length + 1;
-                                return "<tr id=\"lots_" + (tr_lots + i) + "\"><td>" + new_lot_name + "</td><td>" + new_lot_unit + "</td><td>" + new_lot_need + '</td><td class="col_start_sum"></td><td class="col_product_link"><a href="' + new_lot_product_link + '" target="_blank">Ссылка</a></td><td class=\"col_rate_step\">' + '' + "</td><td><a href=\"\" class=\"button-delete\" title=\"Удалить\" onclick=\"noty({ animateOpen: {opacity: 'show'}, animateClose: {opacity: 'hide'}, layout: 'center', text: 'Вы уверены, что хотите удалить лот из аукциона?', buttons: [ {type: 'btn btn-mini btn-primary', text: 'Удалить', click: function(\$noty) { \$noty.close(); $.DeleteLot(" + (tr_lots + i) + "); } }, {type: 'btn btn-mini btn-danger', text: 'Отмена', click: function(\$noty) { \$noty.close(); } } ], closable: false, timeout: false }); return false;\"></a></td></tr>";
-                            } else {
-                                return false;
-                            }
-                        }).join("\n");
-
-                        $('.lots-table tbody').prepend(html);
-                        rateEbay($("input[name=type_auction]:checked"));
-                        changeRateIT();
-                        e.target.closest(".lots-file-import").innerHTML = e.target.closest(".lots-file-import").innerHTML;
-                    } catch (err) {
-                        // Соответствующие запросы о неправильном типе ошибки файла могут быть брошены сюда
-                        console.log ('Неверный тип файла');
-                        return;
-                    }
                     };
                         // Открыть файл в двоичном режиме
                     fileReader.readAsBinaryString(files[0]);
-        
-                    Send_base_file(files[0]);
-                    
                 });
                function Send_base_file($file){
                     //грузим файл на сервер
@@ -472,8 +471,18 @@
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", "/upload_tender/it_tenders_upload.php");
                     xhr.send(formData);
+                    
+                    /*$.ajax({
+                        type: "POST",
+                        url: "/upload_tender/it_tenders_upload.php?id="+tender_id,
+                        data: $file,
+                        success: function(html){
+                            console.log('loaded');
+                        }
+                    }); */
                     return false;
                 }
+
                 //без загрузки на сервер
                 $('input[name="lots_file"]').change(function(e) {
                      e.preventDefault();
