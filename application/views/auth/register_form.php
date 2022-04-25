@@ -1,9 +1,10 @@
 <?php 
-/*
-echo "<pre>";
-var_dump($user_profile);
-echo "</pre>";
-*/
+//Скрываем избраные категории от обычных пользователей
+foreach ($all_tags as $key => $value) {
+    if ($value["id"] == 27) {
+        unset($all_tags[$key]);
+    }
+}
 
 if (!empty($user_profile) && (int)$group_id == 3) {
     $group = array(1 => 'Участник торгов', 2 => 'Администратор торгов', 3 => 'Главный администратор', 4 => 'Менеджер пользователей', 5 => "Администратор торгов ИТ", 6 => "Участник торгов ИТ", 7 => "Аудитор торгов ИТ");
@@ -367,10 +368,10 @@ if (!empty($notice) && $group_id == 3) {
         <td>
             <?php
             if (empty($user_profile)) {
-                echo form_input($add_email);
+                echo form_textarea($add_email);
                 echo form_error($add_email['name']); ?><?php echo isset($errors[$add_email['name']]) ? $errors[$add_email['name']] : '';
             } else
-                echo form_input($add_email);
+                echo form_textarea($add_email);
             ?>
         </td>
     </tr>

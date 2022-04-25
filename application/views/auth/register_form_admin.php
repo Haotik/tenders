@@ -357,10 +357,10 @@ if (!empty($notice) && $group_id == 3) {
         <td>
             <?php
             if (empty($user_profile)) {
-                echo form_input($add_email);
+                echo form_textarea($add_email);
                 echo form_error($add_email['name']); ?><?php echo isset($errors[$add_email['name']]) ? $errors[$add_email['name']] : '';
             } else
-                echo form_input($add_email);
+                echo form_textarea($add_email);
             ?>
         </td>
     </tr>
@@ -566,3 +566,20 @@ if (!empty($notice) && $group_id == 3) {
 </div>
 
 <?php echo form_close(); ?>
+<script>
+    $('select[name=group]').on('change',function(){
+    var $value = $(this).val();
+    var $target = $('#reg_tags');
+    if ($value == 6 || $value == 5){
+        $target.find('option').each(function(){
+            var $opt_val = $(this).val();
+            if ($opt_val != 27){
+                $(this).disabled = true; 
+            }else{
+                $(this).prop("selected", true);
+                $target.trigger('change');
+            }
+        });
+    }
+});
+</script>
