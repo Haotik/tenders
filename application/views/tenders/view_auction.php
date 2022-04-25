@@ -366,7 +366,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                     echo "				<th class='best_autor'>Предлагает</th>\n";
                 } else {
                     // Колонки для участников
-                    //	if ($tender_detail['type_auction'] == 2)
+                    if ($tender_detail['type_auction'] != 3)
                     echo "				<th class='best_value'>Лучшая цена, руб.</th>\n";
 
                     if ($tender_lotes_user && $game_tender == FALSE) {
@@ -434,6 +434,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                                 echo "<td class = 'best_value'>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td>";
                             }
                         } else {
+                            if ($tender_detail['type_auction'] != 3)
                             echo "<td class = 'best_value'>" . (!empty($tender_results_lotes[$value['id']]) ? $tender_results_lotes[$value['id']]['best_value'] : "0.00") . "</td>";
                         }
                         if ($tender_detail['type_auction_plus'] == 1) {
@@ -548,7 +549,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
 
             // Итого в лотах
             $total_price = 0.00;
-            if (!empty($tender_results_lotes)) {
+            if (!empty($tender_results_lotes) AND ($tender_author == TRUE OR $group_id  == 3)) {
                 foreach ($tender_lotes as $v) {
                     if (!empty($tender_results_lotes[$v['id']]))
                         $total_price = (float)$total_price + floatval($tender_results_lotes[$v['id']]['best_value'] * $v['need']);
@@ -556,30 +557,50 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
                         $total_price = (float)$total_price;
                 }
             }
-
-            echo "			<tr>\n";
-            if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
-                echo "				<td colspan=\"5\" style=\"text-align: right;\"><strong>Итого:</strong></td>\n";
-            else
-                echo "				<td colspan=\"4\" style=\"text-align: right;\"><strong>Итого:</strong></td>\n";
-
-            echo "				<td class = ''>" . (float)$total_price . " руб.</td>\n";
-
-            if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3))
-                echo "				<td class = ''>&nbsp;</td>\n";
-            else {
-                if ($tender_lotes_user && $game_tender == FALSE)
-                    echo "				<td colspan=\"2\">&nbsp;</td>\n";
+            if ($tender_detail['type_auction'] != 3) {
+                    
+                echo "			<tr>\n";
+                if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
+                    echo "				<td colspan=\"5\" style=\"text-align: right;\"><strong>Итого:</strong></td>\n";
                 else
+                    echo "				<td colspan=\"4\" style=\"text-align: right;\"><strong>Итого:</strong></td>\n";
+
+                echo "				<td class = ''>" . (float)$total_price . " руб.</td>\n";
+
+                if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3))
                     echo "				<td class = ''>&nbsp;</td>\n";
+                else {
+                    if ($tender_lotes_user && $game_tender == FALSE)
+                        echo "				<td colspan=\"2\">&nbsp;</td>\n";
+                    else
+                        echo "				<td class = ''>&nbsp;</td>\n";
+                }
+                echo "			</tr>\n";
+            } else if ($tender_author == TRUE OR $group_id  == 3) {
+               echo "           <tr>\n";
+                if ($tender_detail['type_rate'] == 2 || $tender_detail['type_auction'] == 2)
+                    echo "              <td colspan=\"5\" style=\"text-align: right;\"><strong>Итого:</strong></td>\n";
+                else
+                    echo "              <td colspan=\"4\" style=\"text-align: right;\"><strong>Итого:</strong></td>\n";
+
+                echo "              <td class = ''>" . (float)$total_price . " руб.</td>\n";
+
+                if (!empty($tender_results_lotes) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3))
+                    echo "              <td class = ''>&nbsp;</td>\n";
+                else {
+                    if ($tender_lotes_user && $game_tender == FALSE)
+                        echo "              <td colspan=\"2\">&nbsp;</td>\n";
+                    else
+                        echo "              <td class = ''>&nbsp;</td>\n";
+                }
+                echo "          </tr>\n";
             }
-            echo "			</tr>\n";
             ?>
             </tbody>
         </table>
         <?
 
-        if (!is_null($kp_files[0])) {
+        if (!is_null($kp_files[0]) AND ($tender_author == TRUE OR $group_id  == 3)) {
             foreach ($kp_files as $kp_file){
             $kp_path = "/data/kp_tenders/" . $kp_file["file"];
         ?>
@@ -601,6 +622,64 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             echo form_open("/tenders/winner/", array('id' => 'wintender-form'), array('tender_id' => $tender_id));
         }
         ?>
+        <? if ($tender_detail['type_auction'] == 3) {
+            if (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) {?>
+                        <h4>Участники аукциона и цены</h4>
+        <table class="reg tablesorter" id="members_show">
+            <thead>
+            <tr>
+                <th>Номер</th>
+                <th>Наименование</th>
+                <th>ИНН</th>
+                <?php echo ($group_id == 2 || $group_id == 3)?"<th>E-mail</th>":"";?>
+                <?php echo ($group_id == 2 || $group_id == 3)?"<th>Телефон</th>":"";?>
+                <?php echo ($group_id == 2 || $group_id == 3)?"<th>ФИО</th>":"";?>
+                <th>Предложение</th>
+                <?php
+                if (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) {
+                    echo "              <th>Победитель</th>\n";
+                }
+                ?>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            $i = 1;
+            if (!empty($tender_members)) {
+                foreach ($tender_members as $key => $value) {
+                    echo "<tr" . (!empty($tender_detail['winner']) && $tender_detail['winner'] == $value['user_id'] ? " class=\"winner\"" : "") . "><td style=\"text-align: center;\">" . $i . "</td><td class = ''>" . $value['res_name'] . "</td><td class = ''>" . $value['inn'];
+
+                    echo ($group_id == 2 || $group_id == 3)?"<td class = ''>".$value['email']."</td>":"";
+                    echo ($group_id == 2 || $group_id == 3)?"<td class = ''>".$value['phone']."</td>":"";
+                    echo ($group_id == 2 || $group_id == 3)?"<td class = ''>".$value['director_name']."</td>":"";
+
+                    echo "</td><td style=\"text-align: center;\">" . (!empty($value['total_sum']) ? $value['total_sum'] : "0.00") . "</td>" . ((($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3) ? "<td style=\"text-align: center;\"><input type=\"radio\" name=\"victory_member\" value=\"" . $value['user_id'] . "\" " . (!empty($value['leader']) && $value['leader'] == 1 ? "checked=\"checked\"" : "") . " /></td>" : "") . "</tr>\n";
+                    $i++;
+                }
+            } else {
+                echo "<tr><td colspan=\"" . (($group_id == 2 && $tender_author == TRUE) || $group_id == 3 ? "7" : "6") . "\" style=\"text-align: center;\">Участников в данном аукционе не было.</tr>\n";
+            }
+
+            if (!empty($visited_users) && ($group_id == 2 || $group_id == 3)) {
+                foreach ($visited_users as $user) {;
+                    echo "<tr>
+<td style=\"text-align: center;\">" . $i . "</td>
+<td class = ''>" . $user->name . "</td>
+<td class = ''>" . $user->inn . "</td>
+<td class = ''>" . $user->email . "</td>
+<td class = ''>" . $user->phone . "</td>
+<td class = ''>" . $user->director_name . "</td>
+<td colspan='2'>Посещал, но не делал ставок</td>
+</tr>";
+                    $i++;
+                }
+            }
+
+            ?>
+            </tbody>
+        </table>
+            <?}
+        }else{?>
         <h4>Участники аукциона и цены</h4>
         <table class="reg tablesorter" id="members_show">
             <thead>
@@ -655,6 +734,7 @@ if ($no_tender == TRUE || (!empty($allowed_users) && !in_array($user_id, $allowe
             ?>
             </tbody>
         </table>
+        <?}?>
         <?php
         if (!empty($tender_members) && (($group_id == 2 && $tender_author == TRUE) || ($group_id == 5 && $tender_author == TRUE) || $group_id == 3)) {
             ?>
