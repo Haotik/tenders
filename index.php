@@ -30,6 +30,7 @@ function print_r2($value)
  *
  */
 	define('ENVIRONMENT', 'production');
+    //define('ENVIRONMENT', 'development');
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING

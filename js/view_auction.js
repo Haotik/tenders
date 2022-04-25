@@ -129,6 +129,7 @@ $(document).ready(function($) {
 
                 data.map((item, i) => {
                     const [ new_lot_name, new_lot_unit, new_lot_need, new_lot_model, new_lot_product_link, new_lot_product_name, new_lot_price ] = item;
+                    console.log(new_lot_name);
                     //разобрали строку xcel
                     //теперь надо найти соответсвие имени - строке 
                     $('#lots_show').find('tr').each(function(){
