@@ -669,7 +669,8 @@ class Auth extends CI_Controller
                     $this->db->insert('users_tags', $tag_data);
                 }
 
-                redirect('/auth/user_edit/');
+               // redirect('/auth/user_edit/');
+                redirect('/auth/');
 			}
 
             $data['all_tags'] = $this->users->get_all_tender_tags();
