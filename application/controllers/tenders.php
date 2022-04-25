@@ -1566,11 +1566,13 @@ class Tenders extends CI_Controller
                         "%final_price%" => $winner_sum,
                         "%url_tender%" => "<a href='http://" . $this->config->item('engine_url') . "/tenders/show/" . $tender['id']."' target=_blank>Ссылка</a>",
                     );
-
-                    if (file_exists($file_base_path)) {
-                        $repl_array["%file_link%"] =  "<a href='".$file_base_path."' target=_blank>Ссылка</a>";
-                    }
-
+                   
+                    $urlHeaders = @get_headers($file_base_path);
+                    
+                    if(strpos($urlHeaders[0], '200')) {
+                         $repl_array["%file_link%"] =  "<a href='".$file_base_path."' target=_blank>Ссылка</a>";
+                    } 
+                    
                 $text_message = $this->tenders->get_settings("email-" . $type);
                 $message = $text_message['value'];
                 unset($text_message);
